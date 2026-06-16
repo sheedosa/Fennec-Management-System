@@ -17,7 +17,7 @@ export default function LoginPage() {
       </p>
       <FormMessage error={state.error} notice={state.notice} />
       <form action={action}>
-        <Field label="البريد الإلكتروني" name="email" type="email" required dir="ltr" />
+        <Field label="اسم المستخدم أو البريد" name="email" type="text" placeholder="fennec" required dir="ltr" />
         <Field label="كلمة المرور" name="password" type="password" required dir="ltr" />
         <SubmitButton label="دخول" />
       </form>

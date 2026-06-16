@@ -10,9 +10,11 @@ export interface AuthState {
 }
 
 export async function signIn(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const email = String(formData.get("email") || "").trim();
+  const raw = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
-  if (!email || !password) return { error: "البريد وكلمة المرور مطلوبان" };
+  if (!raw || !password) return { error: "البريد وكلمة المرور مطلوبان" };
+  // Allow a bare username (e.g. "fennec") — resolve it to the default domain.
+  const email = raw.includes("@") ? raw : `${raw.toLowerCase()}@fennec.ly`;
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
