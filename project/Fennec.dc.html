@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Tajawal',system-ui,sans-serif;background:#f5f1ea;color:#1a1510;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  input,select,textarea,button{font-family:'Tajawal',system-ui,sans-serif}
+  .fx-num{font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#dbcfbd;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#c3b298}
+  @keyframes fxFade{from{opacity:0}to{opacity:1}}
+  @keyframes fxUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes fxToast{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+  @keyframes fxModal{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+  @keyframes fxTip{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @keyframes fxPop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+  #fx-hamburger{display:none}
+  #fx-backdrop{display:none}
+  @media (max-width:920px){
+    #fx-sidebar{position:fixed !important;top:0;right:0;height:100% !important;transform:translateX(106%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:80;box-shadow:-12px 0 50px rgba(0,0,0,.45)}
+    #fx-sidebar[data-open="true"]{transform:translateX(0)}
+    [dir="ltr"] #fx-sidebar{right:auto !important;left:0;transform:translateX(-106%);box-shadow:12px 0 50px rgba(0,0,0,.45)}
+    [dir="ltr"] #fx-sidebar[data-open="true"]{transform:translateX(0)}
+    #fx-backdrop[data-open="true"]{display:block !important}
+    #fx-hamburger{display:inline-flex !important}
+  }
+</style>
+</helmet>
+<div id="fx-root" dir="rtl" style="min-height:100vh;background:#f5f1ea">{{ app }}</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.H = (...a)=>{
+      if(this.state && this.state.lang==="en" && a.length>2){
+        for(let k=2;k<a.length;k++){ if(typeof a[k]==="string" && this.DICT[a[k]]!==undefined) a[k]=this.DICT[a[k]]; }
+      }
+      return React.createElement.apply(React,a);
+    };
+    this.C = {
+      bg:"#f5f1ea", card:"#ffffff", cardAlt:"#faf6ef",
+      border:"#e9e0d2", borderSoft:"#f1e9dc", line:"#f2ece1",
+      navy:"#1a1510", navy2:"#2c2620", ink:"#1a1510",
+      sidebar:"#f4eee3", sidebarLine:"rgba(40,33,24,.10)",
+      cyan:"#9bb8f5", blue:"#b8542f", blueSoft:"#f8ece3",
+      green:"#15924f", greenSoft:"#e8f5ec",
+      red:"#d24b3e", redSoft:"#fbece9",
+      amber:"#c9821f", amberSoft:"#fbf1df",
+      plum:"#8062c4", plumSoft:"#f1ecfa",
+      gray:"#2f2a23", sub:"#564d42", faint:"#6e645a"
+    };
+    this.AR_MONTHS = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+    this.EN_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    this.DICT = {
+      "لوحة القيادة":"Dashboard","العملاء":"Clients","الفرص البيعية":"Pipeline","المشاريع والعقود":"Projects & Contracts","الفواتير":"Invoices","المالية والمصروفات":"Finance & Expenses",
+      "الإدارة المالية":"Financial Management","وكالة فينيك":"Fennec Agency","حساب المدير":"Manager Account","تم الحفظ":"Saved","حفظ تلقائي مفعّل":"Auto-save on",
+      "نظرة عامة":"Overview","مؤشرات الأداء المالي للوكالة":"The agency's financial performance",
+      "هذا الشهر":"This Month","هذا الربع":"This Quarter","هذه السنة":"This Year","كل الوقت":"All Time",
+      "إجمالي الإيرادات المحصّلة":"Total Revenue Collected","فواتير غير محصّلة":"Outstanding Invoices","مصاريف مباشرة للمشاريع":"Direct Project Expenses","مصاريف ثابتة (تشغيلية)":"Fixed Overhead","صافي الربح / الخسارة":"Net Profit / Loss","المشاريع النشطة":"Active Projects",
+      "تصدير Excel/CSV":"Export Excel/CSV","نسخة JSON":"JSON Backup","استيراد JSON":"Import JSON",
+      "الإيرادات مقابل المصروفات":"Revenue vs Expenses","آخر 6 أشهر":"Last 6 months","توزيع المصروفات":"Expense Breakdown","أعلى العملاء بالإيرادات":"Top Clients by Revenue","الإيرادات":"Revenue","المصروفات":"Expenses","الإجمالي":"Total",
+      "لا توجد مصروفات في هذه الفترة":"No expenses in this period","لا توجد إيرادات في هذه الفترة":"No revenue in this period",
+      "العائد الصافي لكل مشروع":"Net Return per Project","المشروع":"Project","العميل":"Client","النوع":"Type","قيمة العقد":"Contract Value","المحصّل":"Collected","المصاريف":"Expenses","الصافي":"Net",
+      "اشتراك شهري":"Monthly Retainer","إنتاج لمرة":"One-off","اشتراك":"Retainer","إنتاج":"Production","لا توجد مشاريع":"No projects",
+      "+ إضافة عميل":"+ Add Client","القيمة الكلية":"Total Value","المشاريع":"Projects","لا يوجد عملاء بعد — ابدأ بإضافة أول عميل":"No clients yet — add your first client",
+      "تعديل":"Edit","القيمة الكلية للعميل":"Client Lifetime Value","عدد المشاريع":"Projects","عدد الفواتير":"Invoices","معلومات الاتصال":"Contact Info","الهاتف":"Phone","البريد":"Email","لا توجد ملاحظات":"No notes","لا مشاريع":"No projects","لا فواتير":"No invoices","سجل المدفوعات":"Payment History","لا مدفوعات":"No payments",
+      "تواصل أولي":"Initial Contact","تم إرسال العرض":"Proposal Sent","تفاوض نهائي":"Final Negotiation","خسارة":"Lost","تتبّع الصفقات من التواصل حتى الإغلاق":"Track deals from contact to close","+ إضافة فرصة":"+ Add Lead",
+      "القيمة المرجّحة للأنبوب":"Weighted Pipeline Value","معدّل الإغلاق (الفوز)":"Win Rate","صفقات مكسوبة":"Deals Won","صفقات خاسرة":"Deals Lost","فوز ✓":"Win ✓","فارغ":"Empty",
+      "السعر":"Price","التوقيت":"Timing","منافس":"Competitor","عدم رد":"No response","أخرى":"Other",
+      "+ مشروع جديد":"+ New Project","توليد اشتراكات الشهر":"Generate Retainers","القيمة":"Value","البداية":"Start","التسليم":"Delivery","الحالة":"Status",
+      "نشط":"Active","معلّق":"On Hold","مكتمل":"Completed","ملغى":"Cancelled","متأخر":"Overdue",
+      "إدارة الفواتير والتحصيل":"Manage invoices & collections","+ فاتورة جديدة":"+ New Invoice","إجمالي المستحقات (غير محصّلة)":"Total Receivables (Outstanding)","فواتير متأخرة":"Overdue Invoices","إجمالي الفواتير":"Total Invoices","⚠ فواتير متأخرة عن السداد":"⚠ Overdue Invoices","تسجيل دفعة":"Record Payment","دفعة":"Payment",
+      "رقم الفاتورة":"Invoice #","الإصدار":"Issued","الاستحقاق":"Due","مسودة":"Draft","مُرسلة":"Sent","مدفوعة":"Paid","متأخرة":"Overdue","لا توجد فواتير":"No invoices",
+      "سجّل الإيرادات والتكاليف والمصروفات الثابتة":"Record revenue, costs & fixed expenses","تسجيل دفعة مستلمة":"Record Received Payment","إيراد مرتبط بمشروع أو فاتورة":"Revenue linked to a project or invoice","تسجيل تكلفة مشروع":"Record Project Cost","فريلانسرز، معدات، إنتاج":"Freelancers, equipment, production","تسجيل مصروف ثابت":"Record Fixed Expense","رواتب، إيجار، اشتراكات":"Salaries, rent, subscriptions",
+      "المصروفات الثابتة المتكررة":"Recurring Fixed Expenses","تُقترح شهرياً مع خطوة تأكيد":"Suggested monthly with a confirm step","+ مصروف ثابت":"+ Fixed Expense","سُجّل هذا الشهر":"Logged this month","بانتظار":"Pending","لا توجد مصروفات ثابتة":"No fixed expenses",
+      "دفتر اليومية":"Journal","بحث...":"Search...","كل الأنواع":"All Types","إيرادات":"Revenue","تكاليف مشاريع":"Project Costs","مصروفات ثابتة":"Fixed Expenses","التاريخ":"Date","الوصف":"Description","المشروع/التصنيف":"Project / Category","المبلغ":"Amount","إيراد":"Revenue","تكلفة مشروع":"Project Cost","مصروف ثابت":"Fixed Expense","لا توجد حركات مطابقة":"No matching entries",
+      "رواتب":"Salaries","إيجار":"Rent","إنترنت واشتراكات":"Internet & Subscriptions","تشغيل وضيافة":"Operations & Hospitality",
+      "إلغاء":"Cancel","حفظ":"Save","تعديل عميل":"Edit Client","عميل جديد":"New Client","اسم العميل":"Client Name","مثال: شركة الواحة":"e.g. Al-Waha Co.","جهة الاتصال":"Contact Person","البريد الإلكتروني":"Email","ملاحظات":"Notes",
+      "تعديل فرصة":"Edit Lead","فرصة بيعية جديدة":"New Lead","اسم الفرصة / المشروع":"Lead / Project Name","مثال: حملة رمضان":"e.g. Ramadan Campaign","القيمة المتوقعة (د.ل)":"Expected Value (LYD)","المرحلة":"Stage","اختر العميل":"Select a client",
+      "تحديد كخسارة":"Mark as Lost","يرجى تحديد سبب خسارة هذه الفرصة:":"Please select why this lead was lost:","السبب":"Reason","اختر السبب":"Select a reason","تأكيد الخسارة":"Confirm Loss",
+      "تحويل الفرصة إلى مشروع":"Convert Lead to Project","🎉 تهانينا على الفوز بالصفقة! أكمل بيانات العقد لإنشاء مشروع نشط.":"🎉 Congrats on the win! Complete the contract details to create an active project.","اسم المشروع":"Project Name","نوع العقد":"Contract Type","إنتاج لمرة واحدة":"One-off Production","اشتراك شهري متجدد":"Monthly Retainer","القيمة النهائية (د.ل)":"Final Value (LYD)","القيمة الشهرية (د.ل)":"Monthly Value (LYD)","تاريخ البداية":"Start Date","تاريخ التسليم":"Delivery Date","إنشاء المشروع":"Create Project",
+      "تعديل مشروع":"Edit Project","مشروع جديد":"New Project","قيمة العقد (د.ل)":"Contract Value (LYD)","توليد القيود":"Generate Entries",
+      "تعديل فاتورة":"Edit Invoice","فاتورة جديدة":"New Invoice","المشروع (اختياري)":"Project (optional)","بدون مشروع":"No project","تاريخ الإصدار":"Issue Date","تاريخ الاستحقاق":"Due Date","بنود الفاتورة":"Line Items","وصف البند":"Item description","+ إضافة بند":"+ Add Item","حفظ الفاتورة":"Save Invoice",
+      "فاتورة: ":"Invoice: ","المتبقي: ":"Remaining: ","المبلغ المستلم (د.ل)":"Amount Received (LYD)","تاريخ الدفع":"Payment Date",
+      "تعديل إيراد":"Edit Revenue","اختر المشروع":"Select a project","المبلغ (د.ل)":"Amount (LYD)","مثال: دفعة مقدمة":"e.g. Advance payment",
+      "تعديل تكلفة":"Edit Cost","مثال: مصور فيديو":"e.g. Videographer","تعديل مصروف":"Edit Expense","التصنيف":"Category","اختر التصنيف":"Select a category",
+      "مصروف ثابت متكرر":"Recurring Fixed Expense","تعديل مصروف ثابت":"Edit Fixed Expense","الاسم":"Name","مثال: إيجار المكتب":"e.g. Office Rent","المبلغ الشهري (د.ل)":"Monthly Amount (LYD)","اختر":"Select",
+      "تسجيل المصروفات الثابتة":"Record Fixed Expenses","تأكيد التسجيل":"Confirm","استيراد نسخة احتياطية":"Import Backup","⚠ تحذير: سيؤدي الاستيراد إلى استبدال جميع البيانات الحالية بالكامل. ننصح بشدة بتنزيل نسخة احتياطية (JSON) أولاً قبل المتابعة.":"⚠ Warning: Importing will completely replace all current data. We strongly recommend downloading a backup (JSON) first.","تنزيل نسخة احتياطية أولاً":"Download backup first",
+      "تم تحديث العميل":"Client updated","تمت إضافة العميل":"Client added","تم تحديث الفرصة":"Lead updated","تمت إضافة الفرصة":"Lead added","تم تحديد الفرصة كخسارة":"Lead marked as lost","تم تحويل الفرصة إلى مشروع نشط 🎉":"Lead converted to an active project 🎉","تم تحديث المشروع":"Project updated","تمت إضافة المشروع":"Project added","تم توليد إيرادات الاشتراكات الشهرية لهذا الشهر":"This month's retainer revenue generated","تم تحديث الفاتورة":"Invoice updated","تم إنشاء الفاتورة":"Invoice created","تم تسجيل الدفعة وإنشاء إيراد":"Payment recorded and revenue created","تم تحديث الحركة":"Entry updated","تم تسجيل الحركة":"Entry recorded","تم تحديث المصروف":"Expense updated","تمت إضافة المصروف الثابت":"Fixed expense added","تم تسجيل المصروفات الثابتة لهذا الشهر":"This month's fixed expenses recorded","تم تصدير دفتر اليومية (CSV)":"Ledger exported (CSV)","تم تنزيل نسخة احتياطية (JSON)":"Backup downloaded (JSON)","تم استيراد البيانات بنجاح":"Data imported successfully","ملف غير صالح - تعذّر الاستيراد":"Invalid file — import failed","تم التراجع عن الحذف":"Delete undone","تراجع":"Undo",
+      "الاسم مطلوب":"Name is required","اسم الفرصة مطلوب":"Lead name is required","قيمة غير صالحة":"Invalid amount","مطلوب":"Required","التاريخ مطلوب":"Date is required","رقم الفاتورة مطلوب":"Invoice number is required","أضف بنداً واحداً على الأقل بقيمة صحيحة":"Add at least one valid line item","اسم المشروع مطلوب":"Project name is required",
+      "الفرصة":"Lead","الفاتورة":"Invoice","الحركة":"Entry","المصروف الثابت":"Fixed Expense"
+    };
+    this.NOW = new Date(2026,5,14);
+    this.state = {
+      data: this.load(),
+      lang: (function(){ try{ return localStorage.getItem("fennec_lang")||"ar"; }catch(e){ return "ar"; } })(),
+      tab: "dashboard",
+      period: "year",
+      sidebarOpen: false,
+      modal: null,
+      draft: {},
+      errors: {},
+      toast: null,
+      saved: false,
+      selectedClient: null,
+      tip: null,
+      onboardDismissed: (function(){ try{ return localStorage.getItem("fennec_onboard")==="done"; }catch(e){ return false; } })(),
+      ledgerSearch: "", ledgerType: "all", ledgerFrom: "", ledgerTo: ""
+    };
+    this._toastTimer = null; this._savedTimer = null;
+  }
+
+  // ---------- persistence ----------
+  load(){
+    try{ const raw = localStorage.getItem("fennec_data_v4"); if(raw) return JSON.parse(raw); }catch(e){}
+    const seed = this.seed(); try{ localStorage.setItem("fennec_data_v4", JSON.stringify(seed)); }catch(e){} return seed;
+  }
+  persist(data){
+    try{ localStorage.setItem("fennec_data_v4", JSON.stringify(data)); }catch(e){}
+    clearTimeout(this._savedTimer);
+    this.setState({ saved:true });
+    this._savedTimer = setTimeout(()=>this.setState({ saved:false }), 1600);
+  }
+  commit(mut){
+    this.setState(s=>{ const d = JSON.parse(JSON.stringify(s.data)); mut(d); this.persist(d); return { data:d }; });
+  }
+  uid(p){ return (p||"id")+"_"+Math.random().toString(36).slice(2,9); }
+
+  // ---------- seed ----------
+  seed(){
+    const clients = [
+      {id:"c1",name:"شركة الواحة للاتصالات",contact:"أحمد المبروك",phone:"0913456789",email:"a.mabrouk@wahacom.ly",notes:"عقد إدارة شهري متجدد، يفضل التواصل صباحاً.",date:"2025-12-20"},
+      {id:"c2",name:"مطاعم البحر المتوسط",contact:"سالم الفيتوري",phone:"0925551234",email:"salem@medsea.ly",notes:"سلسلة مطاعم، مهتمون بمحتوى الفيديو.",date:"2026-02-10"},
+      {id:"c3",name:"بنك الجمهورية",contact:"هدى بن عامر",phone:"0911002030",email:"h.benamer@gumhouria.ly",notes:"إجراءات اعتماد بطيئة، فواتير رسمية مطلوبة.",date:"2026-01-15"},
+      {id:"c4",name:"مهرجان طرابلس الدولي",contact:"خالد الزروق",phone:"0918887766",email:"khaled@tripolifest.ly",notes:"مشروع موسمي، مواعيد حساسة.",date:"2026-04-28"},
+      {id:"c5",name:"متجر نسمة للأزياء",contact:"منى الشريف",phone:"0922334455",email:"mona@nasma.ly",notes:"متجر إلكتروني ناشئ.",date:"2026-03-22"},
+      {id:"c6",name:"مجموعة النور التجارية",contact:"عبدالله النور",phone:"0917778899",email:"info@alnoor.ly",notes:"عميل محتمل من الفرص البيعية.",date:"2026-05-30"}
+    ];
+    const projects = [
+      {id:"p1",name:"إدارة السوشيال ميديا",clientId:"c1",type:"retainer",value:36000,monthly:3000,startDate:"2026-01-01",endDate:"2026-12-31",status:"active",date:"2026-01-01"},
+      {id:"p2",name:"فيديو ترويجي - سلسلة المطاعم",clientId:"c2",type:"oneoff",value:18000,startDate:"2026-03-01",endDate:"2026-05-15",status:"completed",date:"2026-03-01"},
+      {id:"p3",name:"تصميم الهوية البصرية",clientId:"c3",type:"oneoff",value:45000,startDate:"2026-02-10",endDate:"2026-07-30",status:"active",date:"2026-02-10"},
+      {id:"p4",name:"تغطية مهرجان طرابلس",clientId:"c4",type:"oneoff",value:60000,startDate:"2026-05-20",endDate:"2026-06-05",status:"active",date:"2026-05-18"},
+      {id:"p5",name:"إدارة الحملات الإعلانية",clientId:"c5",type:"retainer",value:24000,monthly:2000,startDate:"2026-04-01",endDate:"2027-03-31",status:"active",date:"2026-04-01"}
+    ];
+    const invoices = [
+      {id:"inv1",number:"FN-2026-001",projectId:"p2",clientId:"c2",issueDate:"2026-03-05",dueDate:"2026-03-20",items:[{desc:"دفعة أولى - فيديو ترويجي",amount:9000}],status:"paid",paidAmount:9000,date:"2026-03-05"},
+      {id:"inv2",number:"FN-2026-002",projectId:"p3",clientId:"c3",issueDate:"2026-02-12",dueDate:"2026-02-27",items:[{desc:"دفعة مقدمة - الهوية البصرية",amount:22500}],status:"paid",paidAmount:22500,date:"2026-02-12"},
+      {id:"inv3",number:"FN-2026-003",projectId:"p2",clientId:"c2",issueDate:"2026-05-10",dueDate:"2026-05-25",items:[{desc:"الدفعة النهائية - فيديو ترويجي",amount:9000}],status:"paid",paidAmount:9000,date:"2026-05-10"},
+      {id:"inv4",number:"FN-2026-004",projectId:"p4",clientId:"c4",issueDate:"2026-06-01",dueDate:"2026-06-08",items:[{desc:"تغطية المهرجان - دفعة أولى",amount:30000},{desc:"معدات تصوير إضافية",amount:30000}],status:"sent",paidAmount:0,date:"2026-06-01"},
+      {id:"inv5",number:"FN-2026-005",projectId:"p1",clientId:"c1",issueDate:"2026-06-01",dueDate:"2026-06-30",items:[{desc:"اشتراك يونيو - إدارة سوشيال ميديا",amount:3000}],status:"sent",paidAmount:0,date:"2026-06-01"}
+    ];
+    const tx = [];
+    const addTx=(o)=>tx.push(Object.assign({id:this.uid("tx")},o));
+    // retainer revenue p1 jan-jun
+    ["2026-01-08","2026-02-07","2026-03-08","2026-04-07","2026-05-08","2026-06-09"].forEach((d,i)=>addTx({type:"revenue",amount:3000,projectId:"p1",desc:"اشتراك شهري - "+this.AR_MONTHS[i],date:d}));
+    // p2 video
+    addTx({type:"revenue",amount:9000,projectId:"p2",invoiceId:"inv1",desc:"دفعة أولى فيديو ترويجي",date:"2026-03-18"});
+    addTx({type:"revenue",amount:9000,projectId:"p2",invoiceId:"inv3",desc:"دفعة نهائية فيديو ترويجي",date:"2026-05-22"});
+    // p3 hov
+    addTx({type:"revenue",amount:22500,projectId:"p3",invoiceId:"inv2",desc:"دفعة مقدمة الهوية البصرية",date:"2026-02-25"});
+    addTx({type:"revenue",amount:22500,projectId:"p3",desc:"دفعة نهائية الهوية البصرية",date:"2026-06-12"});
+    // p5 campaign
+    addTx({type:"revenue",amount:2000,projectId:"p5",desc:"اشتراك أبريل - حملات",date:"2026-04-10"});
+    addTx({type:"revenue",amount:2000,projectId:"p5",desc:"اشتراك مايو - حملات",date:"2026-05-11"});
+    addTx({type:"revenue",amount:2000,projectId:"p5",desc:"اشتراك يونيو - حملات",date:"2026-06-10"});
+    // costs
+    addTx({type:"cost",amount:800,projectId:"p1",desc:"مصمم جرافيك مستقل",date:"2026-02-15"});
+    addTx({type:"cost",amount:800,projectId:"p1",desc:"مصمم جرافيك مستقل",date:"2026-04-15"});
+    addTx({type:"cost",amount:4000,projectId:"p2",desc:"مصور فيديو",date:"2026-03-12"});
+    addTx({type:"cost",amount:1500,projectId:"p2",desc:"مونتاج وتعديل",date:"2026-04-05"});
+    addTx({type:"cost",amount:3000,projectId:"p3",desc:"رسوم خطوط ومكتبة صور",date:"2026-02-20"});
+    addTx({type:"cost",amount:12000,projectId:"p4",desc:"طاقم تصوير وإضاءة للمهرجان",date:"2026-05-28"});
+    // overhead each month
+    [0,1,2,3,4,5].forEach(i=>{
+      const mm = String(i+1).padStart(2,"0");
+      addTx({type:"overhead",amount:6000,category:"salaries",desc:"رواتب الموظفين",date:"2026-"+mm+"-28"});
+      addTx({type:"overhead",amount:2500,category:"rent",desc:"إيجار المكتب",date:"2026-"+mm+"-01"});
+      addTx({type:"overhead",amount:600,category:"internet",desc:"إنترنت واشتراكات برامج",date:"2026-"+mm+"-03"});
+    });
+    addTx({type:"overhead",amount:1200,category:"operations",desc:"ضيافة واجتماعات عملاء",date:"2026-05-19"});
+    addTx({type:"overhead",amount:900,category:"operations",desc:"مصاريف تشغيلية متنوعة",date:"2026-06-06"});
+    const leads = [
+      {id:"l1",name:"حملة رمضان التسويقية",clientId:"c6",value:30000,stage:"proposal",date:"2026-05-30"},
+      {id:"l2",name:"تصوير منتجات الأزياء",clientId:"c5",value:8000,stage:"contact",date:"2026-06-02"},
+      {id:"l3",name:"إدارة حسابات البنك الرقمية",clientId:"c3",value:40000,stage:"negotiation",date:"2026-05-12"},
+      {id:"l4",name:"فيديو إعلاني قصير",clientId:"c2",value:15000,stage:"lost",lostReason:"price",date:"2026-04-18"},
+      {id:"l5",name:"الهوية البصرية للبنك",clientId:"c3",value:45000,stage:"won",date:"2026-02-08"}
+    ];
+    const fixedExpenses = [
+      {id:"fx1",name:"رواتب الموظفين",amount:6000,category:"salaries",date:"2026-01-01",lastGen:"2026-06"},
+      {id:"fx2",name:"إيجار المكتب",amount:2500,category:"rent",date:"2026-01-01",lastGen:"2026-06"},
+      {id:"fx3",name:"إنترنت واشتراكات برامج",amount:600,category:"internet",date:"2026-01-01",lastGen:"2026-06"}
+    ];
+    return { clients, projects, invoices, transactions:tx, leads, fixedExpenses };
+  }
+
+  // ---------- helpers ----------
+  tr(s){ return this.state.lang==="en" ? (this.DICT[s]!==undefined?this.DICT[s]:s) : s; }
+  L(ar,en){ return this.state.lang==="en" ? en : ar; }
+  MONTHS(){ return this.state.lang==="en" ? this.EN_MONTHS : this.AR_MONTHS; }
+  startSide(){ return this.state.lang==="en" ? "left" : "right"; }
+  setLang(l){ try{ localStorage.setItem("fennec_lang", l); }catch(e){} this.setState({ lang:l, sidebarOpen:false }); }
+  money(n){ const v = Math.round(Number(n)||0); return v.toLocaleString("en-US")+(this.state.lang==="en"?" LYD":" د.ل"); }
+  fmtDate(s){ if(!s) return "—"; const d=new Date(s); if(isNaN(d)) return s; return d.getDate()+" "+this.MONTHS()[d.getMonth()]+" "+d.getFullYear(); }
+  ymKey(s){ const d=new Date(s); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
+  curYM(){ return this.NOW.getFullYear()+"-"+String(this.NOW.getMonth()+1).padStart(2,"0"); }
+  periodRange(){
+    const p=this.state.period, y=this.NOW.getFullYear(), m=this.NOW.getMonth();
+    if(p==="all") return null;
+    if(p==="month") return {s:new Date(y,m,1), e:new Date(y,m+1,0,23,59,59)};
+    if(p==="quarter"){ const q=Math.floor(m/3)*3; return {s:new Date(y,q,1), e:new Date(y,q+3,0,23,59,59)}; }
+    if(p==="year") return {s:new Date(y,0,1), e:new Date(y,11,31,23,59,59)};
+    return null;
+  }
+  inPeriod(s){ const r=this.periodRange(); if(!r) return true; const d=new Date(s); return d>=r.s && d<=r.e; }
+  clientName(id){ const c=this.state.data.clients.find(c=>c.id===id); return c?c.name:"—"; }
+  projectName(id){ const p=this.state.data.projects.find(p=>p.id===id); return p?p.name:"—"; }
+  invEffStatus(inv){
+    if(inv.status==="paid"||inv.status==="draft") return inv.status;
+    const due=new Date(inv.dueDate);
+    if((inv.status==="sent")&&due<this.NOW) return "overdue";
+    return inv.status;
+  }
+  invTotal(inv){ return (inv.items||[]).reduce((a,b)=>a+(Number(b.amount)||0),0); }
+  isOverdueProject(p){ if(p.status==="completed"||p.status==="cancelled") return false; return new Date(p.endDate)<this.NOW; }
+
+  metrics(){
+    const d=this.state.data;
+    const txp = d.transactions.filter(t=>this.inPeriod(t.date));
+    const revenue = txp.filter(t=>t.type==="revenue").reduce((a,b)=>a+b.amount,0);
+    const costs = txp.filter(t=>t.type==="cost").reduce((a,b)=>a+b.amount,0);
+    const overhead = txp.filter(t=>t.type==="overhead").reduce((a,b)=>a+b.amount,0);
+    const net = revenue-costs-overhead;
+    const margin = revenue>0 ? (net/revenue*100) : 0;
+    const outstanding = d.invoices.filter(i=>{const s=this.invEffStatus(i); return (s==="sent"||s==="overdue")&&this.inPeriod(i.issueDate);}).reduce((a,b)=>a+(this.invTotal(b)-(b.paidAmount||0)),0);
+    const active = d.projects.filter(p=>p.status==="active").length;
+    return { revenue, costs, overhead, net, margin, outstanding, active };
+  }
+
+  // ---------- mutations ----------
+  setDraft(k,v){ this.setState(s=>({ draft:Object.assign({},s.draft,{[k]:v}), errors:Object.assign({},s.errors,{[k]:undefined}) })); }
+  openModal(type,draft){ this.setState({ modal:type, draft:draft?JSON.parse(JSON.stringify(draft)):{}, errors:{} }); }
+  closeModal(){ this.setState({ modal:null, draft:{}, errors:{} }); }
+  toast(msg,kind,undo){ clearTimeout(this._toastTimer); this.setState({ toast:{msg,kind:kind||"info",undo:undo||null} }); this._toastTimer=setTimeout(()=>this.setState({toast:null}),5200); }
+  deleteWithUndo(coll,id,label){
+    const arr=this.state.data[coll]; const idx=arr.findIndex(x=>x.id===id); if(idx<0) return; const item=arr[idx];
+    this.commit(d=>{ d[coll]=d[coll].filter(x=>x.id!==id); });
+    this.toast(this.L("تم حذف "+label, "Deleted "+this.tr(label)), "danger", ()=>{ this.commit(d=>{ d[coll].splice(idx,0,item); }); this.toast("تم التراجع عن الحذف","success"); });
+  }
+  num(v){ const n=parseFloat(String(v).replace(/,/g,"")); return isNaN(n)?null:n; }
+
+  componentDidMount(){
+    // auto-flip overdue invoice statuses persisted
+    let changed=false; const d=JSON.parse(JSON.stringify(this.state.data));
+    d.invoices.forEach(i=>{ if(i.status==="sent" && new Date(i.dueDate)<this.NOW){ i.status="overdue"; changed=true; } });
+    if(changed) this.setState({data:d}, ()=>this.persist(d));
+  }
+
+  // ---------- save handlers ----------
+  saveClient(){
+    const d=this.state.draft, e={}; if(!d.name||!d.name.trim()) e.name="الاسم مطلوب"; 
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{ if(d.id){ const i=data.clients.find(c=>c.id===d.id); Object.assign(i,d); } else { data.clients.push(Object.assign({id:this.uid("c"),date:new Date().toISOString().slice(0,10)},d)); } });
+    this.toast(d.id?"تم تحديث العميل":"تمت إضافة العميل","success"); this.closeModal();
+  }
+  saveLead(){
+    const d=this.state.draft, e={}; const v=this.num(d.value);
+    if(!d.name||!d.name.trim()) e.name="اسم الفرصة مطلوب"; if(!d.clientId) e.clientId="اختر العميل"; if(v===null||v<=0) e.value="قيمة غير صالحة";
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{ if(d.id){ const i=data.leads.find(l=>l.id===d.id); Object.assign(i,{name:d.name,clientId:d.clientId,value:v,stage:d.stage||i.stage}); } else { data.leads.push({id:this.uid("l"),name:d.name,clientId:d.clientId,value:v,stage:d.stage||"contact",date:new Date().toISOString().slice(0,10)}); } });
+    this.toast(d.id?"تم تحديث الفرصة":"تمت إضافة الفرصة","success"); this.closeModal();
+  }
+  moveLead(id,stage){ this.commit(d=>{ const l=d.leads.find(x=>x.id===id); if(l) l.stage=stage; }); }
+  saveLost(){
+    const d=this.state.draft, e={}; if(!d.lostReason) e.lostReason="اختر السبب";
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{ const l=data.leads.find(x=>x.id===d.id); if(l){ l.stage="lost"; l.lostReason=d.lostReason; } });
+    this.toast("تم تحديد الفرصة كخسارة","info"); this.closeModal();
+  }
+  convertLead(){
+    const d=this.state.draft, e={}; const v=this.num(d.value);
+    if(!d.name||!d.name.trim()) e.name="اسم المشروع مطلوب"; if(v===null||v<=0) e.value="قيمة غير صالحة"; if(!d.startDate) e.startDate="مطلوب"; if(!d.endDate) e.endDate="مطلوب";
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{
+      const l=data.leads.find(x=>x.id===d.leadId); if(l) l.stage="won";
+      const proj={id:this.uid("p"),name:d.name,clientId:d.clientId,type:d.type||"oneoff",value:v,startDate:d.startDate,endDate:d.endDate,status:"active",date:new Date().toISOString().slice(0,10)};
+      if((d.type||"oneoff")==="retainer") proj.monthly=this.num(d.monthly)||0;
+      data.projects.push(proj);
+    });
+    this.toast("تم تحويل الفرصة إلى مشروع نشط 🎉","success"); this.closeModal(); this.setState({tab:"projects"});
+  }
+  saveProject(){
+    const d=this.state.draft, e={}; const v=this.num(d.value);
+    if(!d.name||!d.name.trim()) e.name="الاسم مطلوب"; if(!d.clientId) e.clientId="اختر العميل"; if(v===null||v<=0) e.value="قيمة غير صالحة"; if(!d.startDate) e.startDate="مطلوب"; if(!d.endDate) e.endDate="مطلوب";
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{ const o={name:d.name,clientId:d.clientId,type:d.type||"oneoff",value:v,startDate:d.startDate,endDate:d.endDate,status:d.status||"active"}; if(o.type==="retainer") o.monthly=this.num(d.monthly)||0;
+      if(d.id){ const i=data.projects.find(p=>p.id===d.id); Object.assign(i,o); } else { data.projects.push(Object.assign({id:this.uid("p"),date:new Date().toISOString().slice(0,10)},o)); } });
+    this.toast(d.id?"تم تحديث المشروع":"تمت إضافة المشروع","success"); this.closeModal();
+  }
+  generateRetainers(){
+    const ym=this.curYM();
+    this.commit(data=>{
+      data.projects.filter(p=>p.type==="retainer"&&p.status==="active").forEach(p=>{
+        const exists=data.transactions.some(t=>t.projectId===p.id&&t.retainerYM===ym);
+        if(!exists){ data.transactions.push({id:this.uid("tx"),type:"revenue",amount:p.monthly||0,projectId:p.id,desc:this.L("اشتراك شهري - "+this.AR_MONTHS[this.NOW.getMonth()],"Monthly retainer - "+this.EN_MONTHS[this.NOW.getMonth()]),date:this.NOW.toISOString().slice(0,10),retainerYM:ym}); }
+      });
+    });
+    this.toast("تم توليد إيرادات الاشتراكات الشهرية لهذا الشهر","success"); this.closeModal();
+  }
+  saveInvoice(){
+    const d=this.state.draft, e={}; const items=(d.items||[]).filter(it=>it.desc&&this.num(it.amount));
+    if(!d.number||!d.number.trim()) e.number="رقم الفاتورة مطلوب"; if(!d.clientId) e.clientId="اختر العميل"; if(!d.issueDate) e.issueDate="مطلوب"; if(!d.dueDate) e.dueDate="مطلوب"; if(!items.length) e.items="أضف بنداً واحداً على الأقل بقيمة صحيحة";
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{ const o={number:d.number,projectId:d.projectId||null,clientId:d.clientId,issueDate:d.issueDate,dueDate:d.dueDate,items:items.map(it=>({desc:it.desc,amount:this.num(it.amount)})),status:d.status||"draft"};
+      if(d.id){ const i=data.invoices.find(x=>x.id===d.id); o.paidAmount=i.paidAmount||0; Object.assign(i,o); } else { data.invoices.push(Object.assign({id:this.uid("inv"),paidAmount:0,date:new Date().toISOString().slice(0,10)},o)); } });
+    this.toast(d.id?"تم تحديث الفاتورة":"تم إنشاء الفاتورة","success"); this.closeModal();
+  }
+  recordPayment(){
+    const d=this.state.draft, e={}; const amt=this.num(d.amount);
+    if(amt===null||amt<=0) e.amount="قيمة غير صالحة"; if(!d.payDate) e.payDate="مطلوب";
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{ const inv=data.invoices.find(x=>x.id===d.id); const total=this.invTotal(inv); inv.paidAmount=(inv.paidAmount||0)+amt; if(inv.paidAmount>=total) inv.status="paid"; else inv.status="sent";
+      data.transactions.push({id:this.uid("tx"),type:"revenue",amount:amt,projectId:inv.projectId,invoiceId:inv.id,desc:"تحصيل فاتورة "+inv.number,date:d.payDate}); });
+    this.toast("تم تسجيل الدفعة وإنشاء إيراد","success"); this.closeModal();
+  }
+  saveTx(type){
+    const d=this.state.draft, e={}; const amt=this.num(d.amount);
+    if(amt===null||amt<=0) e.amount="قيمة غير صالحة"; if(!d.date) e.date="التاريخ مطلوب";
+    if(type!=="overhead" && !d.projectId) e.projectId="اختر المشروع"; if(type==="overhead"&&!d.category) e.category="اختر التصنيف";
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{ const o={type,amount:amt,desc:d.desc||"",date:d.date}; if(type==="overhead") o.category=d.category; else o.projectId=d.projectId;
+      if(d.id){ const i=data.transactions.find(x=>x.id===d.id); Object.assign(i,o); } else { data.transactions.push(Object.assign({id:this.uid("tx")},o)); } });
+    this.toast(d.id?"تم تحديث الحركة":"تم تسجيل الحركة","success"); this.closeModal();
+  }
+  saveFixed(){
+    const d=this.state.draft, e={}; const amt=this.num(d.amount);
+    if(!d.name||!d.name.trim()) e.name="الاسم مطلوب"; if(amt===null||amt<=0) e.amount="قيمة غير صالحة"; if(!d.category) e.category="اختر التصنيف";
+    if(Object.keys(e).length){ this.setState({errors:e}); return; }
+    this.commit(data=>{ const o={name:d.name,amount:amt,category:d.category}; if(d.id){ const i=data.fixedExpenses.find(x=>x.id===d.id); Object.assign(i,o); } else { data.fixedExpenses.push(Object.assign({id:this.uid("fx"),date:new Date().toISOString().slice(0,10),lastGen:""},o)); } });
+    this.toast(d.id?"تم تحديث المصروف":"تمت إضافة المصروف الثابت","success"); this.closeModal();
+  }
+  generateFixed(){
+    const ym=this.curYM();
+    this.commit(data=>{ data.fixedExpenses.forEach(fx=>{ if(fx.lastGen!==ym){ data.transactions.push({id:this.uid("tx"),type:"overhead",amount:fx.amount,category:fx.category,desc:fx.name,date:this.NOW.toISOString().slice(0,10)}); fx.lastGen=ym; } }); });
+    this.toast("تم تسجيل المصروفات الثابتة لهذا الشهر","success"); this.closeModal();
+  }
+
+  // ---------- export / import ----------
+  exportCSV(){
+    const d=this.state.data; const rows=[[this.tr("النوع"),this.tr("التاريخ"),this.tr("الوصف"),this.tr("المشروع/التصنيف"),this.tr("المبلغ")]];
+    d.transactions.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(t=>{
+      const label = this.tr(t.type==="revenue"?"إيراد":t.type==="cost"?"تكلفة مشروع":"مصروف ثابت");
+      const ref = t.type==="overhead"?this.tr(this.catLabel(t.category)):this.projectName(t.projectId);
+      rows.push([label,t.date,(t.desc||"").replace(/"/g,'""'),ref,t.amount]);
+    });
+    const csv="\uFEFF"+rows.map(r=>r.map(c=>'"'+String(c)+'"').join(",")).join("\n");
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download="fennec-ledger.csv"; a.click(); URL.revokeObjectURL(url);
+    this.toast("تم تصدير دفتر اليومية (CSV)","success");
+  }
+  exportJSON(){
+    const blob=new Blob([JSON.stringify(this.state.data,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download="fennec-backup-"+this.NOW.toISOString().slice(0,10)+".json"; a.click(); URL.revokeObjectURL(url);
+    this.toast("تم تنزيل نسخة احتياطية (JSON)","success");
+  }
+  importJSON(file){
+    const reader=new FileReader();
+    reader.onload=e=>{ try{ const obj=JSON.parse(e.target.result); ["clients","projects","invoices","transactions","leads","fixedExpenses"].forEach(k=>{ if(!Array.isArray(obj[k])) throw 0; }); this.setState({data:obj},()=>this.persist(obj)); this.toast("تم استيراد البيانات بنجاح","success"); this.closeModal(); }catch(err){ this.toast("ملف غير صالح - تعذّر الاستيراد","danger"); } };
+    reader.readAsText(file);
+  }
+  catLabel(c){ return ({salaries:"رواتب",rent:"إيجار",internet:"إنترنت واشتراكات",operations:"تشغيل وضيافة"})[c]||c; }
+
+  // ===================== RENDER =====================
+  renderVals(){ return { app: this.renderApp() }; }
+
+  renderApp(){
+    const h=this.H, C=this.C;
+    return h("div",{dir:this.state.lang==="en"?"ltr":"rtl",style:{display:"flex",minHeight:"100vh"}},
+      this.renderSidebar(),
+      h("div",{id:"fx-backdrop","data-open":this.state.sidebarOpen?"true":"false",onClick:()=>this.setState({sidebarOpen:false}),style:{position:"fixed",inset:0,background:"rgba(15,23,42,.5)",zIndex:70,backdropFilter:"blur(2px)"}}),
+      h("div",{id:"fx-main",style:{flex:1,minWidth:0,display:"flex",flexDirection:"column"}},
+        this.renderTopbar(),
+        h("div",{style:{padding:"24px",flex:1}}, this.renderContent())
+      ),
+      this.renderModal(),
+      this.renderToast()
+    );
+  }
+
+  navItems(){ return [
+    {id:"dashboard",label:"لوحة القيادة"},
+    {id:"clients",label:"العملاء"},
+    {id:"pipeline",label:"الفرص البيعية"},
+    {id:"projects",label:"المشاريع والعقود"},
+    {id:"invoices",label:"الفواتير"},
+    {id:"finances",label:"المالية والمصروفات"}
+  ]; }
+  navIcon(id,active){ const h=this.H; const col=active?"#fff":"#7c6f5c"; const p={fill:"none",stroke:col,strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"};
+    const paths={
+      dashboard:["M3 13h8V3H3z","M13 21h8V3h-8z","M3 21h8v-6H3z"],
+      clients:["M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2","M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8","M22 21v-2a4 4 0 0 0-3-3.87","M16 3.13a4 4 0 0 1 0 7.75"],
+      pipeline:["M3 3v18h18","M7 16V9","M12 16V5","M17 16v-4"],
+      projects:["M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"],
+      invoices:["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z","M14 2v6h6","M9 13h6","M9 17h6"],
+      finances:["M12 1v22","M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"]
+    };
+    return h("svg",{width:20,height:20,viewBox:"0 0 24 24"},(paths[id]||[]).map((d,i)=>h("path",Object.assign({key:i,d},p))));
+  }
+  renderSidebar(){
+    const h=this.H, C=this.C, me=this;
+    const item=(it)=>{ const active=this.state.tab===it.id;
+      return h("button",{key:it.id,onClick:()=>this.setState({tab:it.id,sidebarOpen:false,selectedClient:null}),
+        onMouseEnter:e=>{ if(!active) e.currentTarget.style.background="rgba(40,33,24,.05)"; },
+        onMouseLeave:e=>{ if(!active) e.currentTarget.style.background="transparent"; },
+        style:{display:"flex",alignItems:"center",gap:"13px",width:"100%",padding:"12px 14px",border:"none",cursor:"pointer",borderRadius:"12px",background:active?C.blue:"transparent",color:active?"#fff":"#564d42",fontWeight:active?"700":"600",fontSize:"15px",textAlign:this.startSide(),position:"relative",transition:"background .18s",boxShadow:active?"0 6px 16px rgba(184,84,47,.32)":"none"}},
+        this.navIcon(it.id,active), h("span",null,it.label));
+    };
+    return h("aside",{id:"fx-sidebar",style:{width:"264px",flexShrink:0,background:C.sidebar,borderInlineEnd:"1px solid "+C.border,display:"flex",flexDirection:"column",padding:"20px 16px",gap:"4px"}},
+      h("div",{style:{padding:"4px 8px 16px",borderBottom:"1px solid "+C.sidebarLine,marginBottom:"12px"}},
+        h("img",{src:"assets/fennec-logo-dark.png",alt:"Fennec",style:{width:"148px",display:"block",margin:"0 auto",opacity:1}}),
+        h("div",{style:{textAlign:"center",color:C.faint,fontSize:"10px",letterSpacing:"3.5px",marginTop:"2px"}},this.L("الإدارة المالية","FINANCE SUITE"))
+      ),
+      h("div",{style:{padding:"2px 10px 8px",color:C.sub,fontSize:"11px",fontWeight:"800",letterSpacing:".5px"}},this.L("القائمة","MENU")),
+      this.navItems().map(item),
+      h("div",{style:{marginTop:"auto",paddingTop:"12px",borderTop:"1px solid "+C.sidebarLine}},
+        h("div",{style:{display:"flex",alignItems:"center",gap:"11px",padding:"8px 10px",borderRadius:"12px",background:"rgba(40,33,24,.05)"}},
+          h("div",{style:{width:"40px",height:"40px",borderRadius:"12px",background:"linear-gradient(135deg,#dd9a39,#e6b863)",display:"flex",alignItems:"center",justifyContent:"center",color:"#3a2c12",fontWeight:"800",fontSize:"17px",flexShrink:0}},this.L("ف","F")),
+          h("div",{style:{minWidth:0}},
+            h("div",{style:{color:C.ink,fontSize:"13.5px",fontWeight:"700",whiteSpace:"nowrap"}},this.L("وكالة فينيك","Fennec Agency")),
+            h("div",{style:{color:C.sub,fontSize:"11.5px"}},this.L("حساب المدير","Manager Account"))
+          )
+        )
+      )
+    );
+  }
+  renderTopbar(){
+    const h=this.H, C=this.C; const titles={dashboard:"لوحة القيادة",clients:"العملاء",pipeline:"الفرص البيعية",projects:"المشاريع والعقود",invoices:"الفواتير",finances:"المالية والمصروفات"};
+    return h("header",{style:{height:"70px",background:"rgba(255,255,255,.82)",backdropFilter:"saturate(180%) blur(8px)",borderBottom:"1px solid "+C.border,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 28px",position:"sticky",top:0,zIndex:50}},
+      h("div",{style:{display:"flex",alignItems:"center",gap:"14px",minWidth:0}},
+        h("button",{id:"fx-hamburger",onClick:()=>this.setState({sidebarOpen:true}),style:{display:"none",width:"40px",height:"40px",borderRadius:"11px",border:"1px solid "+C.border,background:"#fff",cursor:"pointer",alignItems:"center",justifyContent:"center"}},
+          h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:C.navy,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M3 6h18"}),h("path",{d:"M3 12h18"}),h("path",{d:"M3 18h18"}))),
+        h("h1",{style:{margin:0,fontSize:"21px",fontWeight:"800",color:C.navy,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},titles[this.state.tab])
+      ),
+      h("div",{style:{display:"flex",alignItems:"center",gap:"12px",flexShrink:0}},
+        this.state.saved?h("span",{style:{display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"12.5px",color:C.green,fontWeight:"700",background:C.greenSoft,padding:"7px 13px",borderRadius:"20px",whiteSpace:"nowrap",animation:"fxPop .25s"}},
+          h("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:C.green,strokeWidth:3,strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M20 6 9 17l-5-5"})),this.L("تم الحفظ","Saved")):
+          h("span",{style:{display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"12.5px",color:C.faint,fontWeight:"600",whiteSpace:"nowrap"}},
+            h("span",{style:{width:"7px",height:"7px",borderRadius:"50%",background:"#bcae96"}}),this.L("حفظ تلقائي","Auto-save")),
+        h("div",{style:{display:"inline-flex",background:C.bg,border:"1px solid "+C.border,borderRadius:"11px",padding:"3px",gap:"2px"}},
+          [["ar","عربي"],["en","EN"]].map(([k,lbl])=>h("button",{key:k,onClick:()=>this.setLang(k),style:{padding:"6px 14px",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"13px",fontWeight:"800",background:this.state.lang===k?"#fff":"transparent",color:this.state.lang===k?C.blue:C.sub,boxShadow:this.state.lang===k?"0 1px 3px rgba(44,38,32,.14)":"none",transition:"all .15s"}},lbl)))
+      )
+    );
+  }
+  renderContent(){
+    switch(this.state.tab){
+      case "dashboard": return this.renderDashboard();
+      case "clients": return this.state.selectedClient?this.renderClientDetail():this.renderClients();
+      case "pipeline": return this.renderPipeline();
+      case "projects": return this.renderProjects();
+      case "invoices": return this.renderInvoices();
+      case "finances": return this.renderFinances();
+      default: return null;
+    }
+  }
+
+  // ---------- shared UI ----------
+  card(children,style){ const h=this.H,C=this.C; return h("div",{style:Object.assign({background:"#fff",border:"1px solid "+C.border,borderRadius:"18px",boxShadow:"0 1px 2px rgba(44,38,32,.04), 0 2px 8px rgba(44,38,32,.03)"},style)},children); }
+  btn(label,onClick,opt){ opt=opt||{}; const h=this.H,C=this.C; const variants={primary:{bg:C.blue,fg:"#fff",bd:C.blue,sh:"0 4px 12px rgba(184,84,47,.26)"},ghost:{bg:"#fff",fg:C.navy,bd:C.border,sh:"none"},danger:{bg:C.redSoft,fg:C.red,bd:"#f1d3cd",sh:"none"},dark:{bg:C.navy,fg:"#fff",bd:C.navy,sh:"0 4px 12px rgba(44,38,32,.2)"},success:{bg:C.green,fg:"#fff",bd:C.green,sh:"0 4px 12px rgba(21,146,79,.24)"}}; const v=variants[opt.variant||"primary"];
+    return h("button",{onClick,style:{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"8px",padding:opt.sm?"8px 13px":"11px 17px",borderRadius:"12px",border:"1px solid "+v.bd,background:v.bg,color:v.fg,fontWeight:"700",fontSize:opt.sm?"13px":"14.5px",cursor:"pointer",whiteSpace:"nowrap",boxShadow:v.sh,transition:"transform .12s, filter .15s"},onMouseEnter:e=>{e.currentTarget.style.filter="brightness(.97)";e.currentTarget.style.transform="translateY(-1px)";},onMouseLeave:e=>{e.currentTarget.style.filter="none";e.currentTarget.style.transform="none";}},opt.icon||null,label); }
+  badge(text,color,bg,opt){ opt=opt||{}; const h=this.H; return h("span",{style:{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 11px",borderRadius:"20px",fontSize:"12px",fontWeight:"700",color,background:bg,whiteSpace:"nowrap",lineHeight:1.4}},opt.noDot?null:h("span",{style:{width:"7px",height:"7px",borderRadius:"50%",background:color,flexShrink:0}}),text); }
+  sectionHead(title,sub,actions){ const h=this.H,C=this.C; return h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"14px",flexWrap:"wrap",marginBottom:"22px"}},
+    h("div",{style:{minWidth:0}},h("h2",{style:{margin:0,fontSize:"24px",fontWeight:"800",color:C.navy,letterSpacing:"-.01em"}},title),sub?h("p",{style:{margin:"6px 0 0",color:C.sub,fontSize:"14.5px",lineHeight:1.5}},sub):null),
+    actions?h("div",{style:{display:"flex",gap:"10px",flexWrap:"wrap"}},actions):null); }
+  empty(msg,opt){ opt=opt||{}; const h=this.H,C=this.C;
+    return h("div",{style:{padding:"44px 24px",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:"6px"}},
+      h("div",{style:{width:"54px",height:"54px",borderRadius:"16px",background:C.bg,border:"1px solid "+C.border,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:"6px"}},
+        h("svg",{width:24,height:24,viewBox:"0 0 24 24",fill:"none",stroke:C.faint,strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round"},(opt.icon||["M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"]).map((d,i)=>h("path",{key:i,d})))),
+      h("div",{style:{color:C.gray,fontSize:"15px",fontWeight:"600",maxWidth:"340px",lineHeight:1.6}},msg),
+      opt.cta?h("div",{style:{marginTop:"12px"}},this.btn(opt.cta.label,opt.cta.onClick,{sm:true})):null);
+  }
+  iconBtn(svgPath,onClick,color){ const h=this.H,C=this.C; return h("button",{onClick,onMouseEnter:e=>{e.currentTarget.style.background=C.bg;e.currentTarget.style.borderColor=C.border;},onMouseLeave:e=>{e.currentTarget.style.background="#fff";e.currentTarget.style.borderColor=C.borderSoft;},style:{width:"34px",height:"34px",borderRadius:"10px",border:"1px solid "+C.borderSoft,background:"#fff",cursor:"pointer",display:"inline-flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}},
+    h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:color||C.sub,strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},svgPath.map((d,i)=>h("path",{key:i,d})))); }
+  tip(text){ const h=this.H,C=this.C;
+    return h("span",{style:{position:"relative",display:"inline-flex"},onMouseEnter:()=>this.setState({tip:text}),onMouseLeave:()=>this.setState({tip:null})},
+      h("span",{style:{width:"17px",height:"17px",borderRadius:"50%",border:"1.5px solid "+C.faint,color:C.faint,fontSize:"11px",fontWeight:"800",display:"inline-flex",alignItems:"center",justifyContent:"center",cursor:"help",lineHeight:1}},"؟"),
+      (this.state.tip===text)?h("span",{style:{position:"absolute",bottom:"calc(100% + 8px)",left:"50%",transform:"translateX(-50%)",background:C.navy,color:"#f3ecdf",fontSize:"12.5px",fontWeight:"600",lineHeight:1.6,padding:"9px 12px",borderRadius:"10px",width:"210px",textAlign:this.startSide(),zIndex:60,boxShadow:"0 10px 30px rgba(44,38,32,.28)",animation:"fxTip .15s",pointerEvents:"none"}},text):null);
+  }
+  thC(t){ const h=this.H,C=this.C; return h("th",{style:{padding:"15px 18px",textAlign:this.startSide(),fontSize:"12px",fontWeight:"700",color:C.sub,letterSpacing:".2px",background:C.cardAlt,borderBottom:"1px solid "+C.border,whiteSpace:"nowrap"}},t); }
+  tdC(c,st){ const h=this.H,C=this.C; return h("td",{style:Object.assign({padding:"15px 18px",fontSize:"14.5px",color:C.navy,borderBottom:"1px solid "+C.line,verticalAlign:"middle"},st)},c); }
+  editIcon(){ return ["M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7","M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"]; }
+  delIcon(){ return ["M3 6h18","M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"]; }
+
+  // ---------- DASHBOARD ----------
+  renderDashboard(){
+    const h=this.H,C=this.C,me=this; const m=this.metrics();
+    const periods=[["month","هذا الشهر"],["quarter","هذا الربع"],["year","هذه السنة"],["all","كل الوقت"]];
+    const pf=h("div",{style:{display:"inline-flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}},
+      h("span",{style:{fontSize:"13.5px",color:C.sub,fontWeight:"600"}},this.L("اعرض بيانات:","Showing:")),
+      h("div",{style:{display:"inline-flex",background:"#fff",border:"1px solid "+C.border,borderRadius:"12px",padding:"4px",gap:"2px",flexWrap:"wrap"}},
+        periods.map(([k,l])=>h("button",{key:k,onClick:()=>this.setState({period:k}),style:{padding:"8px 15px",border:"none",borderRadius:"9px",cursor:"pointer",fontSize:"13.5px",fontWeight:"700",background:this.state.period===k?C.blue:"transparent",color:this.state.period===k?"#fff":C.sub,boxShadow:this.state.period===k?"0 2px 8px rgba(184,84,47,.24)":"none",transition:"all .15s"}},l))));
+
+    const kpi=(label,val,opt)=>{ opt=opt||{}; return this.card([
+      h("div",{key:"l",style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px"}},
+        h("span",{style:{display:"inline-flex",alignItems:"center",gap:"7px",fontSize:"13px",color:C.sub,fontWeight:"600",lineHeight:1.4}},label,opt.tip?this.tip(opt.tip):null),
+        h("span",{style:{width:"40px",height:"40px",borderRadius:"12px",background:opt.iconBg||C.blueSoft,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},opt.icon)),
+      h("div",{key:"v",className:"fx-num",style:{fontSize:"28px",fontWeight:"800",marginTop:"14px",color:opt.color||C.navy,direction:this.state.lang==="en"?"ltr":"rtl",textAlign:this.startSide()}},val),
+      opt.foot?h("div",{key:"f",style:{fontSize:"12.5px",color:C.sub,marginTop:"5px"}},opt.foot):null
+    ],{padding:"20px"}); };
+    const ic=(d,col)=>h("svg",{width:19,height:19,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},d.map((x,i)=>h("path",{key:i,d:x})));
+
+    const cards=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:"16px",marginBottom:"22px"}},
+      kpi("إجمالي الإيرادات المحصّلة",this.money(m.revenue),{icon:ic(["M12 1v22","M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"],C.green),iconBg:C.greenSoft,color:C.green,tip:this.L("كل الأموال التي استلمتها فعلياً من العملاء خلال هذه الفترة.","All money actually received from clients during this period.")}),
+      kpi("فواتير غير محصّلة",this.money(m.outstanding),{icon:ic(["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z","M14 2v6h6"],C.amber),iconBg:C.amberSoft,color:C.amber,tip:this.L("قيمة الفواتير المُرسلة التي لم يدفعها العملاء بعد.","Value of sent invoices clients haven't paid yet.")}),
+      kpi("مصاريف مباشرة للمشاريع",this.money(m.costs),{icon:ic(["M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"],C.gray),iconBg:C.bg,color:C.gray,tip:this.L("مصاريف مرتبطة مباشرة بتنفيذ المشاريع: فريلانسرز، معدات، إنتاج.","Costs tied directly to delivering projects: freelancers, gear, production.")}),
+      kpi("مصاريف ثابتة (تشغيلية)",this.money(m.overhead),{icon:ic(["M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z","M9 22V12h6v10"],C.gray),iconBg:C.bg,color:C.gray,tip:this.L("مصاريف لا ترتبط بمشروع معيّن: رواتب، إيجار، اشتراكات.","Fixed costs not tied to a project: salaries, rent, subscriptions.")}),
+      kpi("صافي الربح / الخسارة",this.money(m.net),{icon:ic(["M3 3v18h18","M7 14l4-4 3 3 5-6"],m.net>=0?C.green:C.red),iconBg:m.net>=0?C.greenSoft:C.redSoft,color:m.net>=0?C.green:C.red,foot:this.L("هامش الربح: "+m.margin.toFixed(1)+"%","Profit margin: "+m.margin.toFixed(1)+"%"),tip:this.L("الإيرادات ناقص كل المصاريف. الرقم الموجب يعني ربحاً.","Revenue minus all expenses. A positive number means profit.")}),
+      kpi("المشاريع النشطة",String(m.active),{icon:ic(["M22 11.08V12a10 10 0 1 1-5.93-9.14","M22 4 12 14.01l-3-3"],C.blue),iconBg:C.blueSoft,color:C.navy,tip:this.L("عدد المشاريع الجارية حالياً ولم تُكتمل بعد.","Projects currently in progress, not yet completed.")})
+    );
+
+    const chartHead=(t,s)=>h("div",{key:"h",style:{marginBottom:"14px"}},h("h3",{style:{margin:0,fontSize:"16.5px",fontWeight:"800",color:C.navy}},t),s?h("p",{style:{margin:"3px 0 0",fontSize:"12.5px",color:C.sub}},s):null);
+    const charts=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:"16px",marginBottom:"22px"}},
+      this.card([chartHead(this.L("الإيرادات مقابل المصروفات","Revenue vs Expenses"),this.L("آخر 6 أشهر","Last 6 months")),this.trendChart()],{padding:"22px",gridColumn:"1 / -1"}),
+      this.card([chartHead(this.L("توزيع المصروفات","Expense Breakdown")),this.donutChart()],{padding:"22px"}),
+      this.card([chartHead(this.L("أعلى العملاء بالإيرادات","Top Clients by Revenue")),this.topClientsChart()],{padding:"22px"})
+    );
+
+    return h("div",{style:{animation:"fxFade .3s"}},
+      this.sectionHead("نظرة عامة",this.L("نظرة سريعة على الوضع المالي للوكالة — بدّل بين الفترات لمتابعة الأداء.","A quick look at the agency's finances — switch periods to track performance."),[
+        this.btn("تصدير Excel/CSV",()=>this.exportCSV(),{variant:"ghost",sm:true,icon:ic(["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z","M14 2v6h6"],C.navy)}),
+        this.btn("نسخة JSON",()=>this.exportJSON(),{variant:"ghost",sm:true}),
+        this.btn("استيراد JSON",()=>this.openModal("import"),{variant:"ghost",sm:true})
+      ]),
+      this.renderOnboarding(),
+      h("div",{style:{marginBottom:"20px"}},pf),
+      cards, charts,
+      this.renderMasterTable()
+    );
+  }
+  renderOnboarding(){
+    if(this.state.onboardDismissed) return null;
+    const h=this.H,C=this.C,d=this.state.data;
+    const hasRevenue=d.transactions.some(t=>t.type==="revenue");
+    const steps=[
+      {done:d.clients.length>0,label:this.L("أضف أول عميل","Add your first client"),hint:this.L("الجهات التي تعمل معها","The businesses you work with"),go:()=>this.setState({tab:"clients"},()=>this.openModal("client"))},
+      {done:d.projects.length>0,label:this.L("أنشئ مشروعاً","Create a project"),hint:this.L("عقد أو عمل لعميل","A contract or job for a client"),go:()=>this.setState({tab:"projects"},()=>this.openModal("project",{type:"oneoff",status:"active"}))},
+      {done:d.invoices.length>0,label:this.L("أصدر فاتورة","Issue an invoice"),hint:this.L("اطلب الدفع من عميلك","Request payment from a client"),go:()=>this.setState({tab:"invoices"},()=>this.openModal("invoice",{items:[{desc:"",amount:""}],status:"draft",issueDate:this.NOW.toISOString().slice(0,10)}))},
+      {done:hasRevenue,label:this.L("سجّل دفعة مستلمة","Record a payment"),hint:this.L("المال الذي وصلك فعلاً","Money you actually received"),go:()=>this.setState({tab:"finances"},()=>this.openModal("revenue",{date:this.NOW.toISOString().slice(0,10)}))},
+      {done:d.fixedExpenses.length>0,label:this.L("أضف مصروفاً ثابتاً","Add a fixed expense"),hint:this.L("رواتب، إيجار، اشتراكات","Salaries, rent, subscriptions"),go:()=>this.setState({tab:"finances"},()=>this.openModal("fixed"))}
+    ];
+    const done=steps.filter(s=>s.done).length, total=steps.length, allDone=done===total;
+    const dismiss=()=>{ try{ localStorage.setItem("fennec_onboard","done"); }catch(e){} this.setState({onboardDismissed:true}); };
+    return h("div",{style:{background:"linear-gradient(135deg,#fbf6ee,#f7efe2)",border:"1px solid "+C.border,borderRadius:"18px",padding:"22px 24px",marginBottom:"22px",animation:"fxUp .35s"}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"14px",flexWrap:"wrap"}},
+        h("div",{style:{minWidth:0}},
+          h("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},
+            h("span",{style:{fontSize:"22px"}},allDone?"✅":"👋"),
+            h("h3",{style:{margin:0,fontSize:"18px",fontWeight:"800",color:C.navy}},allDone?this.L("حسابك جاهز بالكامل","Your account is all set"):this.L("لنبدأ — دليل سريع للإعداد","Let's get started — quick setup"))),
+          h("p",{style:{margin:"6px 0 0",fontSize:"13.5px",color:C.gray,lineHeight:1.6}},allDone?this.L("أكملت كل خطوات الإعداد. يمكنك إخفاء هذا الدليل.","You've completed every step. You can hide this guide."):this.L("أكمل هذه الخطوات لإعداد نظامك المالي خطوة بخطوة.","Complete these steps to set up your finance system, one at a time."))),
+        h("button",{onClick:dismiss,style:{border:"1px solid "+C.border,background:"#fff",color:C.sub,borderRadius:"10px",padding:"7px 13px",fontSize:"13px",fontWeight:"700",cursor:"pointer",whiteSpace:"nowrap"}},this.L("إخفاء","Hide"))),
+      h("div",{style:{display:"flex",alignItems:"center",gap:"12px",margin:"16px 0 18px"}},
+        h("div",{style:{flex:1,height:"8px",background:"#fff",borderRadius:"6px",overflow:"hidden",border:"1px solid "+C.borderSoft}},
+          h("div",{style:{height:"100%",width:(done/total*100)+"%",background:allDone?C.green:C.blue,borderRadius:"6px",transition:"width .5s"}})),
+        h("span",{className:"fx-num",style:{fontSize:"13px",fontWeight:"800",color:C.navy,whiteSpace:"nowrap"}},done+" / "+total)),
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"10px"}},
+        steps.map((s,i)=>h("button",{key:i,onClick:s.go,style:{display:"flex",alignItems:"center",gap:"11px",textAlign:this.startSide(),background:"#fff",border:"1px solid "+(s.done?C.greenSoft:C.border),borderRadius:"13px",padding:"13px 14px",cursor:"pointer",transition:"transform .12s",opacity:s.done?.7:1},onMouseEnter:e=>e.currentTarget.style.transform="translateY(-2px)",onMouseLeave:e=>e.currentTarget.style.transform="none"},
+          h("span",{style:{width:"26px",height:"26px",borderRadius:"50%",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",fontWeight:"800",background:s.done?C.green:C.blueSoft,color:s.done?"#fff":C.blue}},s.done?h("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M20 6 9 17l-5-5"})):String(i+1)),
+          h("span",{style:{minWidth:0}},
+            h("div",{style:{fontSize:"13.5px",fontWeight:"700",color:C.navy,textDecoration:s.done?"line-through":"none"}},s.label),
+            h("div",{style:{fontSize:"11.5px",color:C.sub,marginTop:"1px"}},s.hint)))))
+    );
+  }
+
+  last6Months(){ const arr=[]; for(let i=5;i>=0;i--){ const d=new Date(this.NOW.getFullYear(),this.NOW.getMonth()-i,1); arr.push({y:d.getFullYear(),m:d.getMonth(),label:this.MONTHS()[d.getMonth()].slice(0,3)}); } return arr; }
+  trendChart(){
+    const h=this.H,C=this.C; const months=this.last6Months(); const d=this.state.data;
+    const data=months.map(mo=>{ const f=t=>{const dt=new Date(t.date);return dt.getFullYear()===mo.y&&dt.getMonth()===mo.m;};
+      const rev=d.transactions.filter(t=>t.type==="revenue"&&f(t)).reduce((a,b)=>a+b.amount,0);
+      const exp=d.transactions.filter(t=>(t.type==="cost"||t.type==="overhead")&&f(t)).reduce((a,b)=>a+b.amount,0);
+      return {label:mo.label,rev,exp}; });
+    const max=Math.max(1,...data.map(x=>Math.max(x.rev,x.exp))); const W=620,Hh=230,pad=42,bottom=Hh-34;
+    const X=i=>pad+i*((W-pad*2)/(data.length-1)); const Y=v=>bottom-(v/max)*(bottom-24);
+    const line=key=>data.map((x,i)=>X(i)+","+Y(x[key])).join(" ");
+    const area=key=>X(0)+","+bottom+" "+data.map((x,i)=>X(i)+","+Y(x[key])).join(" ")+" "+X(data.length-1)+","+bottom;
+    const grid=[0,.25,.5,.75,1].map(f=>h("line",{key:f,x1:pad,x2:W-pad,y1:bottom-(bottom-24)*f,y2:bottom-(bottom-24)*f,stroke:C.line,strokeWidth:1}));
+    const dots=key=>data.map((x,i)=>h("circle",{key:key+i,cx:X(i),cy:Y(x[key]),r:3.5,fill:"#fff",stroke:key==="rev"?C.green:C.amber,strokeWidth:2}));
+    return h("div",null,
+      h("svg",{viewBox:"0 0 "+W+" "+Hh,style:{width:"100%",height:"auto",direction:"ltr"}},
+        h("defs",null,h("linearGradient",{id:"gr",x1:0,y1:0,x2:0,y2:1},h("stop",{offset:"0%",stopColor:C.green,stopOpacity:.18}),h("stop",{offset:"100%",stopColor:C.green,stopOpacity:0}))),
+        grid,
+        h("polygon",{points:area("rev"),fill:"url(#gr)"}),
+        h("polyline",{points:line("rev"),fill:"none",stroke:C.green,strokeWidth:2.5,strokeLinejoin:"round"}),
+        h("polyline",{points:line("exp"),fill:"none",stroke:C.amber,strokeWidth:2.5,strokeDasharray:"5 4",strokeLinejoin:"round"}),
+        dots("rev"),dots("exp"),
+        data.map((x,i)=>h("text",{key:"lx"+i,x:X(i),y:Hh-10,fontSize:12,fill:C.faint,textAnchor:"middle",fontFamily:"Tajawal"},x.label))
+      ),
+      h("div",{style:{display:"flex",gap:"18px",justifyContent:"center",marginTop:"6px"}},
+        h("span",{style:{display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"13px",color:C.sub}},h("span",{style:{width:"12px",height:"3px",background:C.green,borderRadius:"2px"}}),"الإيرادات"),
+        h("span",{style:{display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"13px",color:C.sub}},h("span",{style:{width:"12px",height:"3px",background:C.amber,borderRadius:"2px"}}),"المصروفات")
+      )
+    );
+  }
+  donutChart(){
+    const h=this.H,C=this.C; const d=this.state.data; const txp=d.transactions.filter(t=>this.inPeriod(t.date));
+    const segs=[
+      {label:"تكاليف مشاريع",val:txp.filter(t=>t.type==="cost").reduce((a,b)=>a+b.amount,0),color:"#b8542f"},
+      {label:"رواتب",val:txp.filter(t=>t.type==="overhead"&&t.category==="salaries").reduce((a,b)=>a+b.amount,0),color:"#8062c4"},
+      {label:"إيجار",val:txp.filter(t=>t.type==="overhead"&&t.category==="rent").reduce((a,b)=>a+b.amount,0),color:"#c9821f"},
+      {label:"إنترنت واشتراكات",val:txp.filter(t=>t.type==="overhead"&&t.category==="internet").reduce((a,b)=>a+b.amount,0),color:"#15924f"},
+      {label:"تشغيل وضيافة",val:txp.filter(t=>t.type==="overhead"&&t.category==="operations").reduce((a,b)=>a+b.amount,0),color:"#2f8f86"}
+    ].filter(s=>s.val>0);
+    const total=segs.reduce((a,b)=>a+b.val,0); const R=58,CX=80,CY=80,circ=2*Math.PI*R; let off=0;
+    if(total===0) return this.empty("لا توجد مصروفات في هذه الفترة");
+    return h("div",{style:{display:"flex",gap:"18px",alignItems:"center",flexWrap:"wrap"}},
+      h("svg",{width:160,height:160,viewBox:"0 0 160 160",style:{direction:"ltr"}},
+        h("circle",{cx:CX,cy:CY,r:R,fill:"none",stroke:C.line,strokeWidth:18}),
+        segs.map((s,i)=>{ const len=s.val/total*circ; const el=h("circle",{key:i,cx:CX,cy:CY,r:R,fill:"none",stroke:s.color,strokeWidth:18,strokeLinecap:"round",strokeDasharray:Math.max(0,len-3)+" "+(circ-len+3),strokeDashoffset:-off,transform:"rotate(-90 "+CX+" "+CY+")"}); off+=len; return el; }),
+        h("text",{x:CX,y:CY-4,textAnchor:"middle",fontSize:12,fill:C.sub,fontFamily:"Tajawal"},this.L("الإجمالي","Total")),
+        h("text",{x:CX,y:CY+17,textAnchor:"middle",fontSize:16,fontWeight:"800",fill:C.navy,fontFamily:"Tajawal"},(total/1000).toFixed(1)+"k")
+      ),
+      h("div",{style:{flex:1,minWidth:"130px",display:"flex",flexDirection:"column",gap:"8px"}},
+        segs.map((s,i)=>h("div",{key:i,style:{display:"flex",alignItems:"center",gap:"8px",fontSize:"13px"}},
+          h("span",{style:{width:"11px",height:"11px",borderRadius:"4px",background:s.color,flexShrink:0}}),
+          h("span",{style:{color:C.gray,flex:1}},s.label),
+          h("span",{className:"fx-num",style:{fontWeight:"800",color:C.navy}},(s.val/total*100).toFixed(0)+"%"))))
+    );
+  }
+  topClientsChart(){
+    const h=this.H,C=this.C; const d=this.state.data; const map={};
+    d.transactions.filter(t=>t.type==="revenue"&&this.inPeriod(t.date)).forEach(t=>{ const p=d.projects.find(p=>p.id===t.projectId); const cid=p?p.clientId:"_"; map[cid]=(map[cid]||0)+t.amount; });
+    const rows=Object.keys(map).map(cid=>({name:this.clientName(cid),val:map[cid]})).sort((a,b)=>b.val-a.val).slice(0,5);
+    if(!rows.length) return this.empty("لا توجد إيرادات في هذه الفترة");
+    const max=Math.max(...rows.map(r=>r.val)); const palette=["#b8542f","#8062c4","#15924f","#c9821f","#2f8f86"];
+    return h("div",{style:{display:"flex",flexDirection:"column",gap:"15px",paddingTop:"4px"}},
+      rows.map((r,i)=>h("div",{key:i},
+        h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:"13.5px",marginBottom:"6px"}},h("span",{style:{color:C.navy,fontWeight:"700"}},r.name),h("span",{className:"fx-num",style:{color:C.gray,fontWeight:"700"}},this.money(r.val))),
+        h("div",{style:{height:"11px",background:C.line,borderRadius:"6px",overflow:"hidden"}},h("div",{style:{height:"100%",width:(r.val/max*100)+"%",background:palette[i],borderRadius:"6px",transition:"width .5s"}})))));
+  }
+  renderMasterTable(){
+    const h=this.H,C=this.C; const d=this.state.data;
+    const rows=d.projects.map(p=>{ const rev=d.transactions.filter(t=>t.type==="revenue"&&t.projectId===p.id&&this.inPeriod(t.date)).reduce((a,b)=>a+b.amount,0);
+      const cost=d.transactions.filter(t=>t.type==="cost"&&t.projectId===p.id&&this.inPeriod(t.date)).reduce((a,b)=>a+b.amount,0);
+      return {p,rev,cost,net:rev-cost}; });
+    const th=t=>this.thC(t);
+    const td=(c,st)=>this.tdC(c,st);
+    return this.card([
+      h("div",{key:"h",style:{padding:"16px 18px",borderBottom:"1px solid "+C.border}},h("h3",{style:{margin:0,fontSize:"16px",fontWeight:"800",color:C.navy}},"العائد الصافي لكل مشروع")),
+      h("div",{key:"t",style:{overflowX:"auto"}},
+        h("table",{style:{width:"100%",borderCollapse:"collapse",minWidth:"640px"}},
+          h("thead",null,h("tr",null,th("المشروع"),th("العميل"),th("النوع"),th("قيمة العقد"),th("المحصّل"),th("المصاريف"),th("الصافي"))),
+          h("tbody",null, rows.length?rows.map(({p,rev,cost,net})=>h("tr",{key:p.id},
+            td(h("span",{style:{fontWeight:"700"}},p.name)),
+            td(this.clientName(p.clientId)),
+            td(this.badge(p.type==="retainer"?"اشتراك شهري":"إنتاج لمرة",p.type==="retainer"?"#b8542f":"#8062c4",p.type==="retainer"?"#f8ece3":"#f1ecfa")),
+            td(this.money(p.value)),
+            td(this.money(rev)),
+            td(this.money(cost)),
+            td(h("span",{style:{fontWeight:"800",color:net>=0?C.green:C.red}},this.money(net)))
+          )):h("tr",null,h("td",{colSpan:7},this.empty("لا توجد مشاريع"))))
+        ))
+    ],{marginBottom:"0"});
+  }
+
+  // ---------- CLIENTS ----------
+  renderClients(){
+    const h=this.H,C=this.C; const d=this.state.data;
+    const cards=d.clients.map(c=>{ const projs=d.projects.filter(p=>p.clientId===c.id); const ltv=d.transactions.filter(t=>t.type==="revenue"&&projs.some(p=>p.id===t.projectId)).reduce((a,b)=>a+b.amount,0);
+      const g=this.avatarGrad(c.name);
+      return h("div",{key:c.id,onClick:()=>this.setState({selectedClient:c.id}),onMouseEnter:e=>{e.currentTarget.firstChild.style.transform="translateY(-3px)";e.currentTarget.firstChild.style.boxShadow="0 12px 28px rgba(44,38,32,.1)";e.currentTarget.firstChild.style.borderColor="#ddd0bd";},onMouseLeave:e=>{e.currentTarget.firstChild.style.transform="none";e.currentTarget.firstChild.style.boxShadow="";e.currentTarget.firstChild.style.borderColor="";},style:{cursor:"pointer"}},
+        this.card([
+          h("div",{key:"h",style:{display:"flex",alignItems:"center",gap:"12px",marginBottom:"14px"}},
+            h("div",{style:{width:"46px",height:"46px",borderRadius:"13px",background:"linear-gradient(135deg,"+g[0]+","+g[1]+")",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:"800",fontSize:"18px",flexShrink:0}},c.name.charAt(0)),
+            h("div",{style:{minWidth:0}},h("div",{style:{fontWeight:"800",fontSize:"16px",color:C.navy,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},c.name),h("div",{style:{fontSize:"13px",color:C.sub,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},c.contact||"—"))),
+          h("div",{key:"m",style:{display:"flex",justifyContent:"space-between",borderTop:"1px solid "+C.line,paddingTop:"13px"}},
+            h("div",null,h("div",{style:{fontSize:"11.5px",color:C.sub,marginBottom:"2px"}},this.L("القيمة الكلية","Lifetime value")),h("div",{className:"fx-num",style:{fontWeight:"800",color:C.green,fontSize:"15.5px"}},this.money(ltv))),
+            h("div",{style:{textAlign:this.state.lang==="en"?"right":"left"}},h("div",{style:{fontSize:"11.5px",color:C.sub,marginBottom:"2px"}},this.L("المشاريع","Projects")),h("div",{className:"fx-num",style:{fontWeight:"800",color:C.navy,fontSize:"15.5px"}},projs.length)))
+        ],{padding:"18px",transition:"transform .15s, box-shadow .15s, border-color .15s"}));
+    });
+    return h("div",{style:{animation:"fxFade .3s"}},
+      this.sectionHead("العملاء",this.L("الجهات التي تعمل معها — اضغط على أي بطاقة لعرض التفاصيل الكاملة.","The businesses you work with — tap any card for full details."),[this.btn("+ إضافة عميل",()=>this.openModal("client"),{})]),
+      d.clients.length?h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(264px,1fr))",gap:"16px"}},cards):this.card(this.empty(this.L("لا يوجد عملاء بعد. ابدأ بإضافة أول عميل للوكالة.","No clients yet. Start by adding your agency's first client."),{icon:["M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2","M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8"],cta:{label:this.L("+ إضافة عميل","+ Add Client"),onClick:()=>this.openModal("client")}}))
+    );
+  }
+  avatarGrad(seed){ const pals=[["#dd9a39","#e7ba63"],["#cf6b4a","#e0926f"],["#2f6bdc","#5b8be8"],["#6f9a3f","#9cbf68"],["#8062c4","#a288d8"],["#1a9e8a","#4cc0ad"]]; let n=0; for(let i=0;i<(seed||"").length;i++) n+=seed.charCodeAt(i); return pals[n%pals.length]; }
+  renderClientDetail(){
+    const h=this.H,C=this.C; const d=this.state.data; const c=d.clients.find(x=>x.id===this.state.selectedClient); if(!c) return this.renderClients();
+    const projs=d.projects.filter(p=>p.clientId===c.id); const invs=d.invoices.filter(i=>i.clientId===c.id);
+    const pays=d.transactions.filter(t=>t.type==="revenue"&&projs.some(p=>p.id===t.projectId)).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const ltv=pays.reduce((a,b)=>a+b.amount,0);
+    const stat=(l,v,col)=>this.card([h("div",{key:1,style:{fontSize:"13px",color:C.sub}},l),h("div",{key:2,style:{fontSize:"22px",fontWeight:"800",marginTop:"6px",color:col||C.navy}},v)],{padding:"16px"});
+    const block=(title,children)=>this.card([h("h3",{key:"t",style:{margin:"0 0 12px",fontSize:"15px",fontWeight:"800",color:C.navy}},title),children],{padding:"18px"});
+    const li=(left,right)=>h("div",{style:{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid "+C.line,fontSize:"14px"}},left,right);
+    return h("div",{style:{animation:"fxFade .3s"}},
+      h("button",{onClick:()=>this.setState({selectedClient:null}),style:{display:"inline-flex",alignItems:"center",gap:"6px",border:"none",background:"none",color:C.blue,cursor:"pointer",fontWeight:"700",fontSize:"14px",marginBottom:"14px"}},this.L("→ العودة إلى العملاء","← Back to Clients")),
+      this.sectionHead(c.name,c.contact?this.L("جهة الاتصال: "+c.contact,"Contact: "+c.contact):"",[this.btn("تعديل",()=>this.openModal("client",c),{variant:"ghost",sm:true,icon:h("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:C.navy,strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},this.editIcon().map((dd,i)=>h("path",{key:i,d:dd})))})]),
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:"14px",marginBottom:"18px"}},
+        stat("القيمة الكلية للعميل",this.money(ltv),C.green),stat("عدد المشاريع",String(projs.length)),stat("عدد الفواتير",String(invs.length))),
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:"16px",marginBottom:"16px"}},
+        block("معلومات الاتصال",h("div",null,
+          li(h("span",{style:{color:C.sub}},"الهاتف"),h("span",{style:{fontWeight:"700",direction:"ltr"}},c.phone||"—")),
+          li(h("span",{style:{color:C.sub}},"البريد"),h("span",{style:{fontWeight:"700",direction:"ltr"}},c.email||"—")),
+          h("div",{style:{paddingTop:"10px",color:C.sub,fontSize:"13px"}},c.notes||"لا توجد ملاحظات"))),
+        block("المشاريع",projs.length?h("div",null,projs.map(p=>li(h("span",{style:{fontWeight:"600"}},p.name),this.money(p.value)))):this.empty("لا مشاريع"))
+      ),
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:"16px"}},
+        block("الفواتير",invs.length?h("div",null,invs.map(iv=>li(h("span",{style:{fontWeight:"600"}},iv.number),this.invStatusBadge(iv)))):this.empty("لا فواتير")),
+        block("سجل المدفوعات",pays.length?h("div",null,pays.slice(0,8).map(t=>li(h("span",{style:{color:C.sub}},this.fmtDate(t.date)),h("span",{style:{fontWeight:"700",color:C.green}},this.money(t.amount))))):this.empty("لا مدفوعات"))
+      )
+    );
+  }
+
+  // ---------- PIPELINE ----------
+  renderPipeline(){
+    const h=this.H,C=this.C; const d=this.state.data;
+    const cols=[["contact","تواصل أولي","#8c8175"],["proposal","تم إرسال العرض","#b8542f"],["negotiation","تفاوض نهائي","#c9821f"],["lost","خسارة","#d24b3e"]];
+    const won=d.leads.filter(l=>l.stage==="won").length; const lost=d.leads.filter(l=>l.stage==="lost").length;
+    const winRate=(won+lost)>0?(won/(won+lost)*100):0;
+    const prob={contact:.2,proposal:.5,negotiation:.8};
+    const weighted=d.leads.filter(l=>prob[l.stage]).reduce((a,l)=>a+l.value*prob[l.stage],0);
+    const card=(l)=>{ const fwd={contact:"proposal",proposal:"negotiation"}; const back={proposal:"contact",negotiation:"proposal",lost:"contact"};
+      return h("div",{key:l.id,style:{background:"#fff",border:"1px solid "+C.border,borderRadius:"13px",padding:"14px",marginBottom:"10px",boxShadow:"0 1px 2px rgba(44,38,32,.05)"}},
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"6px"}},
+          h("div",{style:{fontWeight:"700",fontSize:"14.5px",color:C.navy}},l.name),
+          h("div",{style:{display:"flex",gap:"4px"}},
+            this.iconBtn(this.editIcon(),()=>this.openModal("lead",l)),
+            this.iconBtn(this.delIcon(),()=>this.deleteWithUndo("leads",l.id,"الفرصة"),C.red))),
+        h("div",{style:{fontSize:"12.5px",color:C.sub,margin:"5px 0 9px"}},this.clientName(l.clientId)),
+        h("div",{className:"fx-num",style:{fontWeight:"800",color:C.navy,fontSize:"16px",marginBottom:"11px"}},this.money(l.value)),
+        l.stage==="lost"?h("div",{style:{fontSize:"12px",color:C.red,background:"#fbece9",padding:"5px 9px",borderRadius:"8px",marginBottom:"9px",fontWeight:"600"}},this.L("السبب: "+this.lostLabel(l.lostReason),"Reason: "+this.tr(this.lostLabel(l.lostReason)))):null,
+        h("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap"}},
+          back[l.stage]?this.btn(this.L("→ إرجاع","← Back"),()=>this.moveLead(l.id,back[l.stage]),{variant:"ghost",sm:true}):null,
+          fwd[l.stage]?this.btn(this.L("تقدّم ←","Advance →"),()=>this.moveLead(l.id,fwd[l.stage]),{variant:"ghost",sm:true}):null,
+          l.stage==="negotiation"?this.btn("فوز ✓",()=>this.openModal("convert",{leadId:l.id,name:l.name,clientId:l.clientId,value:l.value,type:"oneoff"}),{variant:"success",sm:true}):null,
+          (l.stage!=="lost")?this.btn("خسارة",()=>this.openModal("lost",{id:l.id}),{variant:"danger",sm:true}):null));
+    };
+    const stat=(l,v,col,tipText)=>this.card([h("div",{key:1,style:{display:"flex",alignItems:"center",gap:"7px",fontSize:"13px",color:C.sub,fontWeight:"600"}},l,tipText?this.tip(tipText):null),h("div",{key:2,className:"fx-num",style:{fontSize:"24px",fontWeight:"800",marginTop:"8px",color:col}},v)],{padding:"18px"});
+    return h("div",{style:{animation:"fxFade .3s"}},
+      this.sectionHead("الفرص البيعية",this.L("تتبّع صفقاتك عبر المراحل — استخدم أزرار «تقدّم» و«إرجاع» لنقل الفرصة بين الأعمدة.","Track deals through stages — use Advance / Back to move a lead between columns."),[this.btn("+ إضافة فرصة",()=>this.openModal("lead",{stage:"contact"}),{})]),
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:"14px",marginBottom:"20px"}},
+        stat("القيمة المرجّحة للأنبوب",this.money(weighted),C.blue,this.L("القيمة المتوقعة للصفقات المفتوحة، مضروبة باحتمال إغلاق كل مرحلة.","Expected value of open deals, weighted by each stage's chance of closing.")),
+        stat("معدّل الإغلاق (الفوز)",winRate.toFixed(0)+"%",C.green,this.L("نسبة الصفقات المكسوبة من إجمالي الصفقات المغلقة (مكسوبة + خاسرة).","Share of won deals out of all closed deals (won + lost).")),
+        stat("صفقات مكسوبة",String(won),C.green),
+        stat("صفقات خاسرة",String(lost),C.red)),
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:"14px"}},
+        cols.map(([k,label,col])=>{ const items=d.leads.filter(l=>l.stage===k); const sum=items.reduce((a,b)=>a+b.value,0);
+          return h("div",{key:k,style:{background:"#efe6d6",border:"1px solid #e7ddca",borderTop:"3px solid "+col,borderRadius:"14px",padding:"12px"}},
+            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"12px",padding:"4px 4px 0"}},
+              h("span",{style:{display:"inline-flex",alignItems:"center",gap:"7px",fontWeight:"800",color:C.navy,fontSize:"14px"}},h("span",{style:{width:"9px",height:"9px",borderRadius:"50%",background:col}}),label,h("span",{style:{color:C.sub,fontWeight:"700"}},"("+items.length+")")),
+              h("span",{className:"fx-num",style:{fontSize:"12px",color:C.sub,fontWeight:"700"}},this.money(sum))),
+            items.length?items.map(card):h("div",{style:{padding:"24px",textAlign:"center",color:"#a89c8c",fontSize:"13px"}},this.L("لا توجد فرص هنا","No leads here"))); }))
+    );
+  }
+  lostLabel(r){ return ({price:"السعر",timing:"التوقيت",competitor:"منافس",noresponse:"عدم رد",other:"أخرى"})[r]||r; }
+
+  // ---------- PROJECTS ----------
+  renderProjects(){
+    const h=this.H,C=this.C; const d=this.state.data;
+    const statusMap={active:["نشط",C.green,"#e8f5ec"],hold:["معلّق",C.amber,"#fbf1df"],completed:["مكتمل",C.blue,"#f8ece3"],cancelled:["ملغى",C.gray,"#f1ebe0"]};
+    const th=t=>this.thC(t);
+    const td=(c,st)=>this.tdC(c,st);
+    return h("div",{style:{animation:"fxFade .3s"}},
+      this.sectionHead("المشاريع والعقود",this.L(d.projects.length+" مشروع",d.projects.length+" projects"),[
+        this.btn("توليد اشتراكات الشهر",()=>this.openModal("genRetainer"),{variant:"ghost"}),
+        this.btn("+ مشروع جديد",()=>this.openModal("project",{type:"oneoff",status:"active"}),{})]),
+      this.card(h("div",{style:{overflowX:"auto"}},
+        h("table",{style:{width:"100%",borderCollapse:"collapse",minWidth:"760px"}},
+          h("thead",null,h("tr",null,th("المشروع"),th("العميل"),th("النوع"),th("القيمة"),th("البداية"),th("التسليم"),th("الحالة"),th(""))),
+          h("tbody",null, d.projects.length?d.projects.map(p=>{ const ov=this.isOverdueProject(p); const s=statusMap[p.status];
+            return h("tr",{key:p.id},
+              td(h("span",{style:{fontWeight:"700"}},p.name)),
+              td(this.clientName(p.clientId)),
+              td(this.badge(p.type==="retainer"?"اشتراك":"إنتاج",p.type==="retainer"?"#b8542f":"#8062c4",p.type==="retainer"?"#f8ece3":"#f1ecfa")),
+              td(this.money(p.value)),
+              td(this.fmtDate(p.startDate),{whiteSpace:"nowrap",color:C.sub}),
+              td(this.fmtDate(p.endDate),{whiteSpace:"nowrap",color:C.sub}),
+              td(h("span",{style:{display:"flex",gap:"6px",flexWrap:"wrap"}},this.badge(s[0],s[1],s[2]),ov?this.badge("متأخر",C.amber,"#fbf1df"):null)),
+              td(h("div",{style:{display:"flex",gap:"6px"}},this.iconBtn(this.editIcon(),()=>this.openModal("project",p)),this.iconBtn(this.delIcon(),()=>this.deleteWithUndo("projects",p.id,"المشروع"),C.red)))
+            ); }):h("tr",null,h("td",{colSpan:8},this.empty(this.L("لا توجد مشاريع بعد. أنشئ مشروعاً لربطه بعميل وتتبّع أرباحه.","No projects yet. Create one to link it to a client and track its profit."),{cta:{label:this.L("+ مشروع جديد","+ New Project"),onClick:()=>this.openModal("project",{type:"oneoff",status:"active"})}}))))
+        )))
+    );
+  }
+
+  // ---------- INVOICES ----------
+  invStatusBadge(inv){ const C=this.C; const s=this.invEffStatus(inv); const map={draft:["مسودة",C.gray,"#f1ebe0"],sent:["مُرسلة",C.blue,"#f8ece3"],paid:["مدفوعة",C.green,"#e8f5ec"],overdue:["متأخرة",C.red,"#fbece9"]}; const m=map[s]; return this.badge(m[0],m[1],m[2]); }
+  renderInvoices(){
+    const h=this.H,C=this.C; const d=this.state.data;
+    const overdue=d.invoices.filter(i=>this.invEffStatus(i)==="overdue").map(i=>({i,late:Math.floor((this.NOW-new Date(i.dueDate))/86400000)})).sort((a,b)=>b.late-a.late);
+    const outstanding=d.invoices.filter(i=>{const s=this.invEffStatus(i);return s==="sent"||s==="overdue";}).reduce((a,b)=>a+(this.invTotal(b)-(b.paidAmount||0)),0);
+    const th=t=>this.thC(t);
+    const td=(c,st)=>this.tdC(c,st);
+    return h("div",{style:{animation:"fxFade .3s"}},
+      this.sectionHead("الفواتير","إدارة الفواتير والتحصيل",[this.btn("+ فاتورة جديدة",()=>this.openModal("invoice",{items:[{desc:"",amount:""}],status:"draft",issueDate:this.NOW.toISOString().slice(0,10)}),{})]),
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"14px",marginBottom:"18px"}},
+        this.card([h("div",{key:1,style:{fontSize:"13px",color:C.sub}},"إجمالي المستحقات (غير محصّلة)"),h("div",{key:2,style:{fontSize:"24px",fontWeight:"800",marginTop:"6px",color:C.amber}},this.money(outstanding))],{padding:"16px"}),
+        this.card([h("div",{key:1,style:{fontSize:"13px",color:C.sub}},"فواتير متأخرة"),h("div",{key:2,style:{fontSize:"24px",fontWeight:"800",marginTop:"6px",color:C.red}},String(overdue.length))],{padding:"16px"}),
+        this.card([h("div",{key:1,style:{fontSize:"13px",color:C.sub}},"إجمالي الفواتير"),h("div",{key:2,style:{fontSize:"24px",fontWeight:"800",marginTop:"6px",color:C.navy}},String(d.invoices.length))],{padding:"16px"})),
+      overdue.length?this.card([
+        h("div",{key:"h",style:{padding:"14px 18px",borderBottom:"1px solid "+C.border,fontWeight:"800",color:C.red,fontSize:"15px"}},"⚠ فواتير متأخرة عن السداد"),
+        h("div",{key:"l"},overdue.map(({i,late})=>h("div",{key:i.id,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 18px",borderBottom:"1px solid "+C.line,gap:"10px",flexWrap:"wrap"}},
+          h("div",null,h("span",{style:{fontWeight:"700"}},i.number)," — ",h("span",{style:{color:C.sub}},this.clientName(i.clientId))),
+          h("div",{style:{display:"flex",alignItems:"center",gap:"12px"}},this.badge(this.L("متأخرة "+late+" يوم","Late "+late+" days"),C.red,"#fbece9"),h("span",{style:{fontWeight:"800"}},this.money(this.invTotal(i)-(i.paidAmount||0))),this.btn("تسجيل دفعة",()=>this.openModal("payment",{id:i.id,amount:this.invTotal(i)-(i.paidAmount||0),payDate:this.NOW.toISOString().slice(0,10)}),{sm:true})))))
+      ],{marginBottom:"18px"}):null,
+      this.card(h("div",{style:{overflowX:"auto"}},
+        h("table",{style:{width:"100%",borderCollapse:"collapse",minWidth:"780px"}},
+          h("thead",null,h("tr",null,th("رقم الفاتورة"),th("العميل"),th("المشروع"),th("الإصدار"),th("الاستحقاق"),th("الإجمالي"),th("الحالة"),th(""))),
+          h("tbody",null, d.invoices.length?d.invoices.slice().sort((a,b)=>new Date(b.issueDate)-new Date(a.issueDate)).map(i=>{ const total=this.invTotal(i); const s=this.invEffStatus(i);
+            return h("tr",{key:i.id},
+              td(h("span",{style:{fontWeight:"700"}},i.number)),
+              td(this.clientName(i.clientId)),
+              td(i.projectId?this.projectName(i.projectId):"—",{color:C.sub}),
+              td(this.fmtDate(i.issueDate),{whiteSpace:"nowrap",color:C.sub}),
+              td(this.fmtDate(i.dueDate),{whiteSpace:"nowrap",color:C.sub}),
+              td(h("span",null,this.money(total),(i.paidAmount>0&&i.paidAmount<total)?h("div",{style:{fontSize:"11px",color:C.green}},this.L("مدفوع: "+this.money(i.paidAmount),"Paid: "+this.money(i.paidAmount))):null)),
+              td(this.invStatusBadge(i)),
+              td(h("div",{style:{display:"flex",gap:"6px"}},
+                (s!=="paid")?this.btn("دفعة",()=>this.openModal("payment",{id:i.id,amount:total-(i.paidAmount||0),payDate:this.NOW.toISOString().slice(0,10)}),{variant:"ghost",sm:true}):null,
+                this.iconBtn(this.editIcon(),()=>this.openModal("invoice",i)),
+                this.iconBtn(this.delIcon(),()=>this.deleteWithUndo("invoices",i.id,"الفاتورة"),C.red))));
+          }):h("tr",null,h("td",{colSpan:8},this.empty(this.L("لا توجد فواتير بعد. أنشئ فاتورة لطلب الدفع من عميل.","No invoices yet. Create one to request payment from a client."),{icon:["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z","M14 2v6h6"],cta:{label:this.L("+ فاتورة جديدة","+ New Invoice"),onClick:()=>this.openModal("invoice",{items:[{desc:"",amount:""}],status:"draft",issueDate:this.NOW.toISOString().slice(0,10)})}}))))
+        )))
+    );
+  }
+
+  // ---------- FINANCES ----------
+  renderFinances(){
+    const h=this.H,C=this.C; const d=this.state.data;
+    let list=d.transactions.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+    if(this.state.ledgerType!=="all") list=list.filter(t=>t.type===this.state.ledgerType);
+    if(this.state.ledgerFrom) list=list.filter(t=>new Date(t.date)>=new Date(this.state.ledgerFrom));
+    if(this.state.ledgerTo) list=list.filter(t=>new Date(t.date)<=new Date(this.state.ledgerTo));
+    const q=this.state.ledgerSearch.trim();
+    if(q) list=list.filter(t=>{ const ref=t.type==="overhead"?this.catLabel(t.category):this.projectName(t.projectId); return (t.desc||"").includes(q)||ref.includes(q); });
+    const typeLabel=t=>t==="revenue"?["إيراد",C.green,"#e8f5ec"]:t==="cost"?["تكلفة مشروع",C.blue,"#f8ece3"]:["مصروف ثابت",C.amber,"#fbf1df"];
+    const th=t=>this.thC(t);
+    const td=(c,st)=>this.tdC(c,st);
+    const inputStyle={padding:"10px 13px",borderRadius:"10px",border:"1px solid "+C.border,fontSize:"14px",outline:"none",background:"#fff",color:C.navy,fontFamily:"Tajawal"};
+    const actionCard=(title,desc,color,bg,onClick,icon)=>h("button",{onClick,onMouseEnter:e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 10px 24px rgba(44,38,32,.08)";},onMouseLeave:e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none";},style:{textAlign:this.startSide(),background:bg,border:"1px solid "+color+"2e",borderRadius:"16px",padding:"20px",cursor:"pointer",display:"flex",flexDirection:"column",gap:"8px",transition:"transform .14s, box-shadow .14s"}},
+      h("div",{style:{display:"flex",alignItems:"center",gap:"11px"}},h("span",{style:{width:"42px",height:"42px",borderRadius:"12px",background:color,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 4px 10px "+color+"3a"}},icon),h("span",{style:{fontWeight:"800",fontSize:"15.5px",color:C.navy}},title)),
+      h("span",{style:{fontSize:"13px",color:C.gray,lineHeight:1.5}},desc));
+    const wic=(dd)=>h("svg",{width:18,height:18,viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:2.2,strokeLinecap:"round",strokeLinejoin:"round"},dd.map((x,i)=>h("path",{key:i,d:x})));
+
+    return h("div",{style:{animation:"fxFade .3s"}},
+      this.sectionHead("المالية والمصروفات",this.L("سجّل كل حركة مالية هنا. اختر نوع الحركة بالأسفل للبدء.","Record every money movement here. Pick an entry type below to start.")),
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:"14px",marginBottom:"18px"}},
+        actionCard("تسجيل دفعة مستلمة","إيراد مرتبط بمشروع أو فاتورة","#15924f","#e8f5ec",()=>this.openModal("revenue",{date:this.NOW.toISOString().slice(0,10)}),wic(["M12 1v22","M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"])),
+        actionCard("تسجيل تكلفة مشروع","فريلانسرز، معدات، إنتاج","#b8542f","#f8ece3",()=>this.openModal("cost",{date:this.NOW.toISOString().slice(0,10)}),wic(["M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"])),
+        actionCard("تسجيل مصروف ثابت","رواتب، إيجار، اشتراكات","#c9821f","#fbf1df",()=>this.openModal("overhead",{date:this.NOW.toISOString().slice(0,10)}),wic(["M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"]))),
+      this.renderRecurringPanel(),
+      this.card([
+        h("div",{key:"f",style:{padding:"16px 18px",borderBottom:"1px solid "+C.border,display:"flex",gap:"10px",alignItems:"center",flexWrap:"wrap"}},
+          h("h3",{style:{margin:0,marginInlineEnd:"auto",fontSize:"16px",fontWeight:"800",color:C.navy}},"دفتر اليومية"),
+          h("input",{placeholder:this.tr("بحث..."),value:this.state.ledgerSearch,onChange:e=>this.setState({ledgerSearch:e.target.value}),style:Object.assign({},inputStyle,{width:"150px"})}),
+          h("select",{value:this.state.ledgerType,onChange:e=>this.setState({ledgerType:e.target.value}),style:inputStyle},h("option",{value:"all"},"كل الأنواع"),h("option",{value:"revenue"},"إيرادات"),h("option",{value:"cost"},"تكاليف مشاريع"),h("option",{value:"overhead"},"مصروفات ثابتة")),
+          h("input",{type:"date",value:this.state.ledgerFrom,onChange:e=>this.setState({ledgerFrom:e.target.value}),style:inputStyle}),
+          h("input",{type:"date",value:this.state.ledgerTo,onChange:e=>this.setState({ledgerTo:e.target.value}),style:inputStyle})),
+        h("div",{key:"t",style:{overflowX:"auto"}},
+          h("table",{style:{width:"100%",borderCollapse:"collapse",minWidth:"680px"}},
+            h("thead",null,h("tr",null,th("التاريخ"),th("النوع"),th("الوصف"),th("المشروع/التصنيف"),th("المبلغ"),th(""))),
+            h("tbody",null, list.length?list.map(t=>{ const tl=typeLabel(t.type); const ref=t.type==="overhead"?this.catLabel(t.category):this.projectName(t.projectId);
+              return h("tr",{key:t.id},
+                td(this.fmtDate(t.date),{whiteSpace:"nowrap",color:C.sub}),
+                td(this.badge(tl[0],tl[1],tl[2])),
+                td(t.desc||"—"),
+                td(ref,{color:C.sub}),
+                td(h("span",{className:"fx-num",style:{fontWeight:"800",color:t.type==="revenue"?C.green:C.navy}},(t.type==="revenue"?"+":"−")+this.money(t.amount))),
+                td(h("div",{style:{display:"flex",gap:"6px"}},this.iconBtn(this.editIcon(),()=>this.openModal("tx_"+t.type,t)),this.iconBtn(this.delIcon(),()=>this.deleteWithUndo("transactions",t.id,"الحركة"),C.red))));
+            }):h("tr",null,h("td",{colSpan:6},this.empty("لا توجد حركات مطابقة"))))
+          ))
+      ])
+    );
+  }
+  renderRecurringPanel(){
+    const h=this.H,C=this.C; const d=this.state.data; const ym=this.curYM(); const pending=d.fixedExpenses.filter(fx=>fx.lastGen!==ym);
+    return this.card([
+      h("div",{key:"h",style:{padding:"16px 18px",borderBottom:"1px solid "+C.border,display:"flex",justifyContent:"space-between",alignItems:"center",gap:"10px",flexWrap:"wrap"}},
+        h("div",null,h("h3",{style:{margin:0,fontSize:"16px",fontWeight:"800",color:C.navy}},"المصروفات الثابتة المتكررة"),h("p",{style:{margin:"3px 0 0",fontSize:"13px",color:C.sub}},"تُقترح شهرياً مع خطوة تأكيد")),
+        h("div",{style:{display:"flex",gap:"8px"}},this.btn("+ مصروف ثابت",()=>this.openModal("fixed"),{variant:"ghost",sm:true}),pending.length?this.btn(this.L("تسجيل مصروفات الشهر ("+pending.length+")","Record this month's ("+pending.length+")"),()=>this.openModal("genFixed"),{sm:true}):null)),
+      h("div",{key:"l",style:{padding:"6px 18px 14px"}},
+        d.fixedExpenses.length?d.fixedExpenses.map(fx=>h("div",{key:fx.id,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 0",borderBottom:"1px solid "+C.line,gap:"10px",flexWrap:"wrap"}},
+          h("div",{style:{display:"flex",alignItems:"center",gap:"10px"}},h("span",{style:{fontWeight:"700"}},fx.name),this.badge(this.catLabel(fx.category),C.gray,"#f1ebe0"),fx.lastGen===ym?this.badge("سُجّل هذا الشهر",C.green,"#e8f5ec"):this.badge("بانتظار",C.amber,"#fbf1df")),
+          h("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},h("span",{className:"fx-num",style:{fontWeight:"800"}},this.money(fx.amount)),this.iconBtn(this.editIcon(),()=>this.openModal("fixed",fx)),this.iconBtn(this.delIcon(),()=>this.deleteWithUndo("fixedExpenses",fx.id,"المصروف الثابت"),C.red)))):this.empty(this.L("لا توجد مصروفات ثابتة بعد. أضفها لتظهر شهرياً بضغطة واحدة.","No fixed expenses yet. Add them to log each month in one click."),{cta:{label:this.L("+ مصروف ثابت","+ Fixed Expense"),onClick:()=>this.openModal("fixed")}}))
+    ],{marginBottom:"18px"});
+  }
+
+  // ---------- MODALS ----------
+  field(label,key,opt){ opt=opt||{}; const h=this.H,C=this.C; const err=this.state.errors[key];
+    const base={width:"100%",padding:"11px 13px",borderRadius:"11px",border:"1px solid "+(err?C.red:C.border),fontSize:"14.5px",outline:"none",background:"#fff",fontFamily:"Tajawal",color:C.navy,transition:"border-color .15s, box-shadow .15s"};
+    const fx={onFocus:e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow="0 0 0 3px rgba(184,84,47,.13)";},onBlur:e=>{e.currentTarget.style.borderColor=err?C.red:C.border;e.currentTarget.style.boxShadow="none";}};
+    let control;
+    if(opt.type==="select"){ control=h("select",Object.assign({value:(this.state.draft[key]||""),onChange:e=>this.setDraft(key,e.target.value),style:base},fx),(opt.placeholder?[h("option",{key:"_",value:""},opt.placeholder)]:[]).concat((opt.options||[]).map(o=>h("option",{key:o.v,value:o.v},o.l)))); }
+    else if(opt.type==="textarea"){ control=h("textarea",Object.assign({value:(this.state.draft[key]||""),onChange:e=>this.setDraft(key,e.target.value),rows:3,placeholder:this.tr(opt.placeholder||""),style:Object.assign({},base,{resize:"vertical"})},fx)); }
+    else { control=h("input",Object.assign({type:opt.type||"text",value:(this.state.draft[key]||""),onChange:e=>this.setDraft(key,e.target.value),placeholder:this.tr(opt.placeholder||""),style:base},fx)); }
+    return h("div",{style:{display:"flex",flexDirection:"column",gap:"7px",flex:opt.flex||"1 1 100%",minWidth:opt.minWidth||0}},
+      h("label",{style:{fontSize:"13px",fontWeight:"700",color:"#5c5249"}},label),control,
+      err?h("span",{style:{fontSize:"12px",color:C.red,fontWeight:"600"}},err):null);
+  }
+  clientOptions(){ return this.state.data.clients.map(c=>({v:c.id,l:c.name})); }
+  projectOptions(){ return this.state.data.projects.map(p=>({v:p.id,l:p.name})); }
+  modalShell(title,body,footer,wide){ const h=this.H,C=this.C;
+    return h("div",{onClick:()=>this.closeModal(),style:{position:"fixed",inset:0,background:"rgba(44,38,32,.5)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",backdropFilter:"blur(4px)",animation:"fxFade .15s"}},
+      h("div",{onClick:e=>e.stopPropagation(),style:{background:"#fff",borderRadius:"20px",width:wide?"640px":"470px",maxWidth:"100%",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 30px 70px rgba(44,38,32,.34)",animation:"fxModal .22s"}},
+        h("div",{style:{padding:"20px 24px",borderBottom:"1px solid "+C.border,display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,background:"#fff",borderRadius:"20px 20px 0 0",zIndex:2}},
+          h("h3",{style:{margin:0,fontSize:"19px",fontWeight:"800",color:C.navy}},title),
+          h("button",{onClick:()=>this.closeModal(),onMouseEnter:e=>e.currentTarget.style.background="#e9e0d2",onMouseLeave:e=>e.currentTarget.style.background=C.bg,style:{width:"34px",height:"34px",borderRadius:"10px",border:"none",background:C.bg,cursor:"pointer",fontSize:"19px",color:C.gray,lineHeight:1,transition:"background .15s"}},"×")),
+        h("div",{style:{padding:"24px"}},body),
+        h("div",{style:{padding:"16px 24px",borderTop:"1px solid "+C.border,display:"flex",justifyContent:"flex-start",gap:"10px",position:"sticky",bottom:0,background:"#fff",borderRadius:"0 0 20px 20px"}},footer)));
+  }
+  formRow(children){ return this.H("div",{style:{display:"flex",gap:"14px",flexWrap:"wrap",marginBottom:"16px"}},children); }
+  renderModal(){
+    const t=this.state.modal; if(!t) return null; const h=this.H,C=this.C,d=this.state.draft;
+    const cancel=this.btn("إلغاء",()=>this.closeModal(),{variant:"ghost"});
+    if(t==="client") return this.modalShell(d.id?"تعديل عميل":"عميل جديد",h("div",null,
+      this.formRow([this.field("اسم العميل","name",{placeholder:"مثال: شركة الواحة"})]),
+      this.formRow([this.field("جهة الاتصال","contact",{flex:"1 1 45%",minWidth:"160px"}),this.field("الهاتف","phone",{flex:"1 1 45%",minWidth:"140px"})]),
+      this.formRow([this.field("البريد الإلكتروني","email",{type:"email"})]),
+      this.formRow([this.field("ملاحظات","notes",{type:"textarea"})])
+    ),[this.btn("حفظ",()=>this.saveClient(),{}),cancel]);
+    if(t==="lead") return this.modalShell(d.id?"تعديل فرصة":"فرصة بيعية جديدة",h("div",null,
+      this.formRow([this.field("اسم الفرصة / المشروع","name",{placeholder:"مثال: حملة رمضان"})]),
+      this.formRow([this.field("العميل","clientId",{type:"select",placeholder:"اختر العميل",options:this.clientOptions(),flex:"1 1 45%",minWidth:"160px"}),this.field("القيمة المتوقعة (د.ل)","value",{type:"number",flex:"1 1 45%",minWidth:"140px"})]),
+      this.formRow([this.field("المرحلة","stage",{type:"select",options:[{v:"contact",l:"تواصل أولي"},{v:"proposal",l:"تم إرسال العرض"},{v:"negotiation",l:"تفاوض نهائي"}]})])
+    ),[this.btn("حفظ",()=>this.saveLead(),{}),cancel]);
+    if(t==="lost") return this.modalShell("تحديد كخسارة",h("div",null,
+      h("p",{style:{margin:"0 0 14px",color:C.sub,fontSize:"14px"}},"يرجى تحديد سبب خسارة هذه الفرصة:"),
+      this.formRow([this.field("السبب","lostReason",{type:"select",placeholder:"اختر السبب",options:[{v:"price",l:"السعر"},{v:"timing",l:"التوقيت"},{v:"competitor",l:"منافس"},{v:"noresponse",l:"عدم رد"},{v:"other",l:"أخرى"}]})])
+    ),[this.btn("تأكيد الخسارة",()=>this.saveLost(),{variant:"danger"}),cancel]);
+    if(t==="convert") return this.modalShell("تحويل الفرصة إلى مشروع",h("div",null,
+      h("div",{style:{background:"#e8f5ec",borderRadius:"10px",padding:"12px 14px",marginBottom:"16px",fontSize:"13px",color:"#0f7a42"}},"🎉 تهانينا على الفوز بالصفقة! أكمل بيانات العقد لإنشاء مشروع نشط."),
+      this.formRow([this.field("اسم المشروع","name",{})]),
+      this.formRow([this.field("نوع العقد","type",{type:"select",options:[{v:"oneoff",l:"إنتاج لمرة واحدة"},{v:"retainer",l:"اشتراك شهري متجدد"}],flex:"1 1 45%",minWidth:"160px"}),this.field("القيمة النهائية (د.ل)","value",{type:"number",flex:"1 1 45%",minWidth:"140px"})]),
+      d.type==="retainer"?this.formRow([this.field("القيمة الشهرية (د.ل)","monthly",{type:"number"})]):null,
+      this.formRow([this.field("تاريخ البداية","startDate",{type:"date",flex:"1 1 45%",minWidth:"150px"}),this.field("تاريخ التسليم","endDate",{type:"date",flex:"1 1 45%",minWidth:"150px"})])
+    ),[this.btn("إنشاء المشروع",()=>this.convertLead(),{variant:"success"}),cancel]);
+    if(t==="project") return this.modalShell(d.id?"تعديل مشروع":"مشروع جديد",h("div",null,
+      this.formRow([this.field("اسم المشروع","name",{})]),
+      this.formRow([this.field("العميل","clientId",{type:"select",placeholder:"اختر العميل",options:this.clientOptions(),flex:"1 1 45%",minWidth:"160px"}),this.field("نوع العقد","type",{type:"select",options:[{v:"oneoff",l:"إنتاج لمرة واحدة"},{v:"retainer",l:"اشتراك شهري متجدد"}],flex:"1 1 45%",minWidth:"160px"})]),
+      this.formRow([this.field("قيمة العقد (د.ل)","value",{type:"number",flex:"1 1 45%",minWidth:"140px"}),d.type==="retainer"?this.field("القيمة الشهرية (د.ل)","monthly",{type:"number",flex:"1 1 45%",minWidth:"140px"}):this.field("الحالة","status",{type:"select",options:[{v:"active",l:"نشط"},{v:"hold",l:"معلّق"},{v:"completed",l:"مكتمل"},{v:"cancelled",l:"ملغى"}],flex:"1 1 45%",minWidth:"140px"})]),
+      d.type==="retainer"?this.formRow([this.field("الحالة","status",{type:"select",options:[{v:"active",l:"نشط"},{v:"hold",l:"معلّق"},{v:"completed",l:"مكتمل"},{v:"cancelled",l:"ملغى"}]})]):null,
+      this.formRow([this.field("تاريخ البداية","startDate",{type:"date",flex:"1 1 45%",minWidth:"150px"}),this.field("تاريخ التسليم","endDate",{type:"date",flex:"1 1 45%",minWidth:"150px"})])
+    ),[this.btn("حفظ",()=>this.saveProject(),{}),cancel]);
+    if(t==="genRetainer") return this.modalShell("توليد اشتراكات الشهر",h("div",null,
+      h("p",{style:{margin:0,color:C.sub,fontSize:"14px",lineHeight:1.8}},this.L("سيتم إنشاء قيد إيراد متوقع لكل مشروع اشتراك شهري نشط لشهر "+this.AR_MONTHS[this.NOW.getMonth()]+"، إن لم يكن قد أُنشئ مسبقاً. لن تتكرر القيود الموجودة.","An expected revenue entry will be created for each active monthly-retainer project for "+this.EN_MONTHS[this.NOW.getMonth()]+", unless one already exists. Existing entries won't be duplicated."))
+    ),[this.btn("توليد القيود",()=>this.generateRetainers(),{}),cancel]);
+    if(t==="invoice") return this.renderInvoiceModal();
+    if(t==="payment"){ const inv=this.state.data.invoices.find(x=>x.id===d.id); const bal=inv?this.invTotal(inv)-(inv.paidAmount||0):0;
+      return this.modalShell("تسجيل دفعة",h("div",null,
+        inv?h("div",{style:{background:"#f4efe7",borderRadius:"10px",padding:"12px 14px",marginBottom:"16px",fontSize:"14px"}},h("div",null,"فاتورة: ",h("b",null,inv.number)),h("div",{style:{marginTop:"4px"}},"المتبقي: ",h("b",{style:{color:C.amber}},this.money(bal)))):null,
+        this.formRow([this.field("المبلغ المستلم (د.ل)","amount",{type:"number",flex:"1 1 45%",minWidth:"140px"}),this.field("تاريخ الدفع","payDate",{type:"date",flex:"1 1 45%",minWidth:"150px"})])
+      ),[this.btn("تسجيل الدفعة",()=>this.recordPayment(),{variant:"success"}),cancel]); }
+    if(t==="revenue") return this.modalShell(d.id?"تعديل إيراد":"تسجيل دفعة مستلمة",h("div",null,
+      this.formRow([this.field("المشروع","projectId",{type:"select",placeholder:"اختر المشروع",options:this.projectOptions()})]),
+      this.formRow([this.field("المبلغ (د.ل)","amount",{type:"number",flex:"1 1 45%",minWidth:"140px"}),this.field("التاريخ","date",{type:"date",flex:"1 1 45%",minWidth:"150px"})]),
+      this.formRow([this.field("الوصف","desc",{placeholder:"مثال: دفعة مقدمة"})])
+    ),[this.btn("حفظ",()=>this.saveTx("revenue"),{variant:"success"}),cancel]);
+    if(t==="cost"||t==="tx_cost") return this.modalShell(d.id?"تعديل تكلفة":"تسجيل تكلفة مشروع",h("div",null,
+      this.formRow([this.field("المشروع","projectId",{type:"select",placeholder:"اختر المشروع",options:this.projectOptions()})]),
+      this.formRow([this.field("المبلغ (د.ل)","amount",{type:"number",flex:"1 1 45%",minWidth:"140px"}),this.field("التاريخ","date",{type:"date",flex:"1 1 45%",minWidth:"150px"})]),
+      this.formRow([this.field("الوصف","desc",{placeholder:"مثال: مصور فيديو"})])
+    ),[this.btn("حفظ",()=>this.saveTx("cost"),{}),cancel]);
+    if(t==="tx_revenue") return this.modalShell("تعديل إيراد",h("div",null,
+      this.formRow([this.field("المشروع","projectId",{type:"select",placeholder:"اختر المشروع",options:this.projectOptions()})]),
+      this.formRow([this.field("المبلغ (د.ل)","amount",{type:"number",flex:"1 1 45%",minWidth:"140px"}),this.field("التاريخ","date",{type:"date",flex:"1 1 45%",minWidth:"150px"})]),
+      this.formRow([this.field("الوصف","desc",{})])
+    ),[this.btn("حفظ",()=>this.saveTx("revenue"),{variant:"success"}),cancel]);
+    if(t==="overhead"||t==="tx_overhead") return this.modalShell(d.id?"تعديل مصروف":"تسجيل مصروف ثابت",h("div",null,
+      this.formRow([this.field("التصنيف","category",{type:"select",placeholder:"اختر التصنيف",options:[{v:"salaries",l:"رواتب"},{v:"rent",l:"إيجار"},{v:"internet",l:"إنترنت واشتراكات"},{v:"operations",l:"تشغيل وضيافة"}]})]),
+      this.formRow([this.field("المبلغ (د.ل)","amount",{type:"number",flex:"1 1 45%",minWidth:"140px"}),this.field("التاريخ","date",{type:"date",flex:"1 1 45%",minWidth:"150px"})]),
+      this.formRow([this.field("الوصف","desc",{})])
+    ),[this.btn("حفظ",()=>this.saveTx("overhead"),{variant:"primary"}),cancel]);
+    if(t==="fixed") return this.modalShell(d.id?"تعديل مصروف ثابت":"مصروف ثابت متكرر",h("div",null,
+      this.formRow([this.field("الاسم","name",{placeholder:"مثال: إيجار المكتب"})]),
+      this.formRow([this.field("المبلغ الشهري (د.ل)","amount",{type:"number",flex:"1 1 45%",minWidth:"140px"}),this.field("التصنيف","category",{type:"select",placeholder:"اختر",options:[{v:"salaries",l:"رواتب"},{v:"rent",l:"إيجار"},{v:"internet",l:"إنترنت واشتراكات"},{v:"operations",l:"تشغيل وضيافة"}],flex:"1 1 45%",minWidth:"150px"})])
+    ),[this.btn("حفظ",()=>this.saveFixed(),{}),cancel]);
+    if(t==="genFixed") return this.modalShell("تسجيل المصروفات الثابتة",h("div",null,
+      h("p",{style:{margin:0,color:C.sub,fontSize:"14px",lineHeight:1.8}},this.L("سيتم تسجيل المصروفات الثابتة التي لم تُسجّل بعد لشهر "+this.AR_MONTHS[this.NOW.getMonth()]+" في دفتر اليومية.","Fixed expenses not yet logged for "+this.EN_MONTHS[this.NOW.getMonth()]+" will be recorded in the journal."))
+    ),[this.btn("تأكيد التسجيل",()=>this.generateFixed(),{}),cancel]);
+    if(t==="import") return this.modalShell("استيراد نسخة احتياطية",h("div",null,
+      h("div",{style:{background:"#fbece9",border:"1px solid #f1d3cd",borderRadius:"10px",padding:"14px",marginBottom:"16px",fontSize:"14px",color:"#9a3328",lineHeight:1.7}},"⚠ تحذير: سيؤدي الاستيراد إلى استبدال جميع البيانات الحالية بالكامل. ننصح بشدة بتنزيل نسخة احتياطية (JSON) أولاً قبل المتابعة."),
+      h("input",{type:"file",accept:".json,application/json",onChange:e=>{ if(e.target.files[0]) this.importJSON(e.target.files[0]); },style:{width:"100%",fontSize:"14px"}})
+    ),[this.btn("تنزيل نسخة احتياطية أولاً",()=>this.exportJSON(),{variant:"ghost"}),cancel]);
+    return null;
+  }
+  renderInvoiceModal(){
+    const h=this.H,C=this.C,d=this.state.draft; const items=d.items||[];
+    const setItem=(i,k,v)=>{ const arr=items.slice(); arr[i]=Object.assign({},arr[i],{[k]:v}); this.setDraft("items",arr); };
+    const addItem=()=>this.setDraft("items",items.concat([{desc:"",amount:""}]));
+    const delItem=(i)=>this.setDraft("items",items.filter((_,x)=>x!==i));
+    const total=items.reduce((a,b)=>a+(this.num(b.amount)||0),0);
+    const inp=(v,oc,ph,t)=>h("input",{value:v,onChange:e=>oc(e.target.value),placeholder:this.tr(ph||""),type:t||"text",onFocus:e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow="0 0 0 3px rgba(184,84,47,.13)";},onBlur:e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.boxShadow="none";},style:{padding:"10px 12px",borderRadius:"10px",border:"1px solid "+C.border,fontSize:"14px",outline:"none",fontFamily:"Tajawal",color:C.navy,width:"100%",transition:"border-color .15s, box-shadow .15s"}});
+    return this.modalShell(d.id?"تعديل فاتورة":"فاتورة جديدة",h("div",null,
+      this.formRow([this.field("رقم الفاتورة","number",{placeholder:"FN-2026-006",flex:"1 1 45%",minWidth:"150px"}),this.field("الحالة","status",{type:"select",options:[{v:"draft",l:"مسودة"},{v:"sent",l:"مُرسلة"},{v:"paid",l:"مدفوعة"}],flex:"1 1 45%",minWidth:"140px"})]),
+      this.formRow([this.field("العميل","clientId",{type:"select",placeholder:"اختر العميل",options:this.clientOptions(),flex:"1 1 45%",minWidth:"160px"}),this.field("المشروع (اختياري)","projectId",{type:"select",placeholder:"بدون مشروع",options:this.projectOptions(),flex:"1 1 45%",minWidth:"160px"})]),
+      this.formRow([this.field("تاريخ الإصدار","issueDate",{type:"date",flex:"1 1 45%",minWidth:"150px"}),this.field("تاريخ الاستحقاق","dueDate",{type:"date",flex:"1 1 45%",minWidth:"150px"})]),
+      h("div",{style:{marginBottom:"8px"}},
+        h("label",{style:{fontSize:"13px",fontWeight:"700",color:"#5c5249"}},"بنود الفاتورة"),
+        this.state.errors.items?h("span",{style:{fontSize:"12px",color:C.red,marginInlineStart:"8px"}},this.state.errors.items):null,
+        h("div",{style:{marginTop:"8px",display:"flex",flexDirection:"column",gap:"8px"}},
+          items.map((it,i)=>h("div",{key:i,style:{display:"flex",gap:"8px",alignItems:"center"}},
+            h("div",{style:{flex:"1 1 auto"}},inp(it.desc,v=>setItem(i,"desc",v),"وصف البند")),
+            h("div",{style:{width:"120px",flexShrink:0}},inp(it.amount,v=>setItem(i,"amount",v),"المبلغ","number")),
+            this.iconBtn(this.delIcon(),()=>delItem(i),C.red))),
+          h("button",{onClick:addItem,style:{alignSelf:"flex-start",border:"1px dashed "+C.border,background:"#f4efe7",borderRadius:"9px",padding:"8px 14px",cursor:"pointer",color:C.blue,fontWeight:"700",fontSize:"13px"}},"+ إضافة بند"))),
+      h("div",{style:{marginTop:"14px",padding:"12px 14px",background:"#f4efe7",borderRadius:"10px",display:"flex",justifyContent:"space-between",alignItems:"center"}},h("span",{style:{fontWeight:"700",color:C.sub}},"الإجمالي"),h("span",{style:{fontWeight:"800",fontSize:"18px",color:C.navy}},this.money(total)))
+    ),[this.btn("حفظ الفاتورة",()=>this.saveInvoice(),{}),this.btn("إلغاء",()=>this.closeModal(),{variant:"ghost"})],true);
+  }
+
+  // ---------- TOAST ----------
+  renderToast(){
+    const t=this.state.toast; if(!t) return null; const h=this.H,C=this.C;
+    const col={success:C.green,danger:C.red,info:C.blue}[t.kind]||C.blue;
+    return h("div",{style:{position:"fixed",bottom:"24px",left:"50%",transform:"translateX(-50%)",zIndex:200,animation:"fxToast .28s"}},
+      h("div",{style:{display:"flex",alignItems:"center",gap:"14px",background:C.navy,color:"#fff",padding:"13px 18px",borderRadius:"12px",boxShadow:"0 12px 40px rgba(15,23,42,.35)",minWidth:"260px"}},
+        h("span",{style:{width:"8px",height:"8px",borderRadius:"50%",background:col,flexShrink:0}}),
+        h("span",{style:{fontSize:"14px",fontWeight:"600",flex:1}},t.msg),
+        t.undo?h("button",{onClick:()=>{ t.undo(); },style:{border:"none",background:"rgba(255,255,255,.12)",color:C.cyan,fontWeight:"800",fontSize:"13px",padding:"6px 12px",borderRadius:"8px",cursor:"pointer"}},"تراجع"):null));
+  }
+}
+</script>
+</body>
+</html>
