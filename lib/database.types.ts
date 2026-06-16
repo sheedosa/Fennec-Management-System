@@ -312,9 +312,9 @@ export type Database = {
         Relationships: [];
       };
       organizations: {
-        Row: { created_at: string; id: string; locale: string; name: string };
-        Insert: { created_at?: string; id?: string; locale?: string; name: string };
-        Update: { created_at?: string; id?: string; locale?: string; name?: string };
+        Row: { created_at: string; id: string; locale: string; name: string; theme: string };
+        Insert: { created_at?: string; id?: string; locale?: string; name: string; theme?: string };
+        Update: { created_at?: string; id?: string; locale?: string; name?: string; theme?: string };
         Relationships: [];
       };
       profiles: {

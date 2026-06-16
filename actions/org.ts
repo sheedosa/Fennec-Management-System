@@ -2,10 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getOrgContext } from "@/lib/auth/context";
 import { importFennecData } from "@/lib/data/import";
 import { seed } from "@/lib/seed";
+import { THEME_COOKIE, type ThemePref } from "@/lib/theme";
 
 export interface OrgActionState {
   error?: string;
@@ -40,6 +42,19 @@ export async function setLocale(locale: "ar" | "en"): Promise<void> {
   if (!ctx) redirect("/login");
   const supabase = await createClient();
   await supabase.from("organizations").update({ locale }).eq("id", ctx.orgId);
+  revalidatePath("/", "layout");
+}
+
+/** Switch the theme. Persists to a cookie (for no-flash SSR) and, when
+ *  signed in, to organizations.theme as the durable per-org default. */
+export async function setTheme(theme: ThemePref): Promise<void> {
+  const c = await cookies();
+  c.set(THEME_COOKIE, theme, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+  const ctx = await getOrgContext();
+  if (ctx) {
+    const supabase = await createClient();
+    await supabase.from("organizations").update({ theme }).eq("id", ctx.orgId);
+  }
   revalidatePath("/", "layout");
 }
 

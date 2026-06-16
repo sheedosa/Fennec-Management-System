@@ -5,9 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { Locale, OrgRole } from "@/lib/types";
+import type { ThemePref } from "@/lib/theme";
 import { L } from "@/lib/i18n/dictionary";
 import { signOut } from "@/actions/auth";
 import { setLocale } from "@/actions/org";
+import { ThemeToggle } from "@/components/shell/ThemeToggle";
 
 const NAV: { id: string; ar: string; en: string; paths: string[] }[] = [
   { id: "dashboard", ar: "لوحة القيادة", en: "Dashboard", paths: ["M3 13h8V3H3z", "M13 21h8V3h-8z", "M3 21h8v-6H3z"] },
@@ -33,11 +35,13 @@ export function AppShell({
   orgName,
   role,
   locale,
+  theme,
   children,
 }: {
   orgName: string;
   role: OrgRole;
   locale: Locale;
+  theme: ThemePref;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -119,9 +123,9 @@ export function AppShell({
 
       {/* main */}
       <div id="fx-main" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-        <header style={{ height: "70px", background: "rgba(255,255,255,.82)", backdropFilter: "saturate(180%) blur(8px)", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", position: "sticky", top: 0, zIndex: 50 }}>
+        <header style={{ height: "70px", background: "color-mix(in srgb, var(--color-card) 82%, transparent)", backdropFilter: "saturate(180%) blur(8px)", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", position: "sticky", top: 0, zIndex: 50 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
-            <button id="fx-hamburger" onClick={() => setOpen(true)} style={{ width: "40px", height: "40px", borderRadius: "11px", border: "1px solid var(--color-border)", background: "#fff", cursor: "pointer", alignItems: "center", justifyContent: "center" }}>
+            <button id="fx-hamburger" onClick={() => setOpen(true)} aria-label="القائمة" style={{ width: "40px", height: "40px", borderRadius: "11px", border: "1px solid var(--color-border)", background: "var(--color-card)", cursor: "pointer", alignItems: "center", justifyContent: "center" }}>
               <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--color-navy)" strokeWidth={2} strokeLinecap="round">
                 <path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" />
               </svg>
@@ -131,19 +135,20 @@ export function AppShell({
             </h1>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
+            <ThemeToggle current={theme} />
             <div style={{ display: "inline-flex", background: "var(--color-bg)", border: "1px solid var(--color-border)", borderRadius: "11px", padding: "3px", gap: "2px" }}>
               {(["ar", "en"] as const).map((k) => (
                 <button
                   key={k}
                   onClick={() => setLocale(k)}
-                  style={{ padding: "6px 14px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 800, background: locale === k ? "#fff" : "transparent", color: locale === k ? "var(--color-blue)" : "var(--color-sub)", boxShadow: locale === k ? "0 1px 3px rgba(44,38,32,.14)" : "none" }}
+                  style={{ padding: "6px 14px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 800, background: locale === k ? "var(--color-card)" : "transparent", color: locale === k ? "var(--color-accent)" : "var(--color-sub)", boxShadow: locale === k ? "var(--elev-1)" : "none" }}
                 >
                   {k === "ar" ? "عربي" : "EN"}
                 </button>
               ))}
             </div>
             <form action={signOut}>
-              <button type="submit" style={{ padding: "8px 13px", border: "1px solid var(--color-border)", background: "#fff", color: "var(--color-sub)", borderRadius: "11px", fontSize: "13px", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+              <button type="submit" style={{ padding: "8px 13px", border: "1px solid var(--color-border)", background: "var(--color-card)", color: "var(--color-sub)", borderRadius: "11px", fontSize: "13px", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
                 {L("خروج", "Sign out", locale)}
               </button>
             </form>

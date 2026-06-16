@@ -9,10 +9,10 @@ export function Card({
   return (
     <div
       style={{
-        background: "#fff",
+        background: "var(--color-card)",
         border: "1px solid var(--color-border)",
         borderRadius: "18px",
-        boxShadow: "0 1px 2px rgba(44,38,32,.04), 0 2px 8px rgba(44,38,32,.03)",
+        boxShadow: "var(--elev-1)",
         ...style,
       }}
     >

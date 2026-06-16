@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
+import { getThemePref, resolveThemeAttr } from "@/lib/theme";
 
 const tajawal = Tajawal({
   subsets: ["arabic", "latin"],
@@ -31,15 +32,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+// Pre-paint script: when preference is "system", set data-theme from the OS
+// before first paint so there's no flash. For explicit light/dark the SSR
+// attribute already matches, so this is a no-op.
+const themeScript = `(function(){try{var p="dark";var m=document.cookie.match(/fennec_theme=(light|dark|system)/);if(m)p=m[1];if(p==="system"){p=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.dataset.theme=p;}catch(e){}})();`;
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // dir/lang are finalized per-locale in app/(app)/layout.tsx once next-intl
-  // routing lands; Arabic-first RTL is the default.
+  const pref = await getThemePref();
+  const themeAttr = resolveThemeAttr(pref);
+  // dir/lang are Arabic-first RTL by default; per-locale dir is applied in the
+  // app shell. Theme is resolved here so <html data-theme> is correct on SSR.
   return (
-    <html lang="ar" dir="rtl" className={tajawal.variable}>
+    <html
+      lang="ar"
+      dir="rtl"
+      data-theme={themeAttr}
+      className={tajawal.variable}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>{children}</body>
     </html>
   );

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Locale, OrgRole } from "@/lib/types";
+import type { ThemePref } from "@/lib/theme";
 
 export interface OrgContext {
   userId: string;
@@ -8,6 +9,7 @@ export interface OrgContext {
   orgName: string;
   role: OrgRole;
   locale: Locale;
+  theme: ThemePref;
 }
 
 /**
@@ -24,14 +26,18 @@ export async function getOrgContext(): Promise<OrgContext | null> {
 
   const { data: membership } = await supabase
     .from("memberships")
-    .select("role, org_id, organizations(name, locale)")
+    .select("role, org_id, organizations(name, locale, theme)")
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();
 
   if (!membership) return null;
 
-  const org = membership.organizations as unknown as { name: string; locale: string } | null;
+  const org = membership.organizations as unknown as {
+    name: string;
+    locale: string;
+    theme: string;
+  } | null;
   return {
     userId: user.id,
     email: user.email ?? null,
@@ -39,5 +45,6 @@ export async function getOrgContext(): Promise<OrgContext | null> {
     orgName: org?.name ?? "",
     role: membership.role,
     locale: (org?.locale as Locale) ?? "ar",
+    theme: (org?.theme as ThemePref) ?? "dark",
   };
 }
