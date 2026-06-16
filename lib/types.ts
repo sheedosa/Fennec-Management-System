@@ -10,6 +10,7 @@ export type TxType = "revenue" | "cost" | "overhead";
 export type OverheadCategory = "salaries" | "rent" | "internet" | "operations";
 export type LeadStage = "contact" | "proposal" | "negotiation" | "won" | "lost";
 export type LostReason = "price" | "timing" | "competitor" | "noresponse" | "other";
+export type OrgRole = "manager" | "staff";
 export type Locale = "ar" | "en";
 
 export interface Client {
