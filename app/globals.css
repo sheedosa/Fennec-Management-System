@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* ── Design tokens — ported verbatim from prototype `this.C` ────────── */
+@theme {
+  --color-bg: #f5f1ea;
+  --color-card: #ffffff;
+  --color-card-alt: #faf6ef;
+  --color-border: #e9e0d2;
+  --color-border-soft: #f1e9dc;
+  --color-line: #f2ece1;
+  --color-navy: #1a1510;
+  --color-navy2: #2c2620;
+  --color-ink: #1a1510;
+  --color-sidebar: #f4eee3;
+  --color-cyan: #9bb8f5;
+  --color-blue: #b8542f; /* primary accent (named "blue" in prototype) */
+  --color-blue-soft: #f8ece3;
+  --color-green: #15924f;
+  --color-green-soft: #e8f5ec;
+  --color-red: #d24b3e;
+  --color-red-soft: #fbece9;
+  --color-amber: #c9821f;
+  --color-amber-soft: #fbf1df;
+  --color-plum: #8062c4;
+  --color-plum-soft: #f1ecfa;
+  --color-gray: #2f2a23;
+  --color-sub: #564d42;
+  --color-faint: #6e645a;
+
+  --font-tajawal: var(--font-tajawal), system-ui, sans-serif;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: var(--font-tajawal), "Tajawal", system-ui, sans-serif;
+  background: #f5f1ea;
+  color: #1a1510;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+input,
+select,
+textarea,
+button {
+  font-family: var(--font-tajawal), "Tajawal", system-ui, sans-serif;
+}
+.fx-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #dbcfbd;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c3b298;
+}
+
+/* ── Animations — ported verbatim ───────────────────────────────────── */
+@keyframes fxFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fxUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fxToast {
+  from { opacity: 0; transform: translateY(26px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fxModal {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fxTip {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fxPop {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Responsive sidebar / hamburger — ported verbatim ───────────────── */
+#fx-hamburger {
+  display: none;
+}
+#fx-backdrop {
+  display: none;
+}
+@media (max-width: 920px) {
+  #fx-sidebar {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    height: 100% !important;
+    transform: translateX(106%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 80;
+    box-shadow: -12px 0 50px rgba(0, 0, 0, 0.45);
+  }
+  #fx-sidebar[data-open="true"] {
+    transform: translateX(0);
+  }
+  [dir="ltr"] #fx-sidebar {
+    right: auto !important;
+    left: 0;
+    transform: translateX(-106%);
+    box-shadow: 12px 0 50px rgba(0, 0, 0, 0.45);
+  }
+  [dir="ltr"] #fx-sidebar[data-open="true"] {
+    transform: translateX(0);
+  }
+  #fx-backdrop[data-open="true"] {
+    display: block !important;
+  }
+  #fx-hamburger {
+    display: inline-flex !important;
+  }
+}
