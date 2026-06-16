@@ -35,13 +35,23 @@ The correctness pillar. Pure, framework-free, injectable `now`, byte-identical t
 - `lib/database.types.ts` generated from the live schema; Supabase clients are now typed.
 - Remaining (moves into UI phases): auth signup/org/invite **screens**, atomic payment/retainer/convert **RPCs** (Phase 4), seed-loader for demo data.
 
-## 🟡 In progress / next
+### Phase 3 — Read UI + Auth (✅ app runs end-to-end on live data)
+- **Auth**: middleware session refresh + route gating; login / signup / onboarding pages; `signIn/signUp/signOut`, `createOrganization`, `setLocale`, `loadDemoData` actions.
+- **Data layer**: `lib/data/load.ts` (DB rows → `FennecData`), `lib/data/import.ts` (seed string-IDs → UUIDs, shared with import wizard).
+- **App shell**: pixel-ported sidebar + topbar (RTL/LTR, language toggle, sign out).
+- **Dashboard**: fully wired — 6 KPI cards, 3 hand-rolled SVG charts, net-return master table, period selector via URL.
+- **Clients / Projects / Invoices / Pipeline / Finances**: read-only views on live data.
+- **Verified visually** (Preview MCP): login + dashboard render correctly in RTL with the exact prototype numbers (87,000 / 63,000 / 22,100 / 56,700 / 8,200 / 9.4% / 4 active), zero console errors.
+- **Live e2e test** (`tests/integration/live_e2e.test.ts`): auth → RLS import → RLS read → metrics parity. **20/20 tests green.**
+- **Demo login**: `demo@fennec.ly` / `FennecDemo123` (confirmed user, populated org).
 
-## ⬜ Not started
-- Phase 3 — Read UI (shell + 6 modules, charts, RTL/LTR). *Can be built against `lib/seed.ts` without live Supabase.*
-- Phase 4 — Write UI (modals, Zod, server actions, atomic RPCs, undo, export).
-- Phase 5 — Import wizard + roles polish + audit viewer.
-- Phase 6 — E2E (Playwright), Sentry, strict CSP, CI/CD, backups + PITR, deploy.
+## 🟡 Next
+
+## ⬜ Next phases
+- **Phase 4 — Write UI**: CRUD modals for every entity with Zod validation; atomic RPCs for `recordPayment` / `generateRetainers` / `generateFixed` / `convertLead`; optimistic kanban moves; soft-delete + undo; CSV/JSON export. (Read views exist; they become interactive.)
+- **Phase 4b — Detail views & polish**: client detail view, pixel-perfect pass on the 5 secondary screens, full next-intl locale routing (dictionary already ported).
+- **Phase 5 — Import wizard** (`/settings/import`) + manager/staff UI gating + audit-log viewer + member invitations UI.
+- **Phase 6 — Hardening**: Playwright E2E, Sentry, strict CSP, CI/CD (GitHub Actions), Supabase PITR backups + restore drill, Vercel deploy. Bump Next's bundled postcss when upstream patches it; configure SMTP and re-enable email confirmation.
 
 ## Commands
 | | |
