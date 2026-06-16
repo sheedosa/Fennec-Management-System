@@ -26,12 +26,16 @@ The correctness pillar. Pure, framework-free, injectable `now`, byte-identical t
 - `lib/seed.ts` — prototype seed data (deterministic IDs), `PROTOTYPE_NOW`
 - `tests/unit/finance.test.ts` — parity assertions hand-derived from the seed
 
-## 🟡 In progress
+### Phase 1 — Schema / RLS / Auth (✅ applied to live DB; RLS proven)
+- Supabase project **`Fennec-Management-System`** (`fesycrujoyffvvvdlzuq`, eu-central-1) provisioned.
+- `0001_init.sql` — enums, all 12 org-scoped tables, indexes, constraints, append-only `audit_log` — **applied** (all tables RLS-enabled).
+- `0002_rls_audit_rpc.sql` — RLS helpers, policies (read = member, delete = manager), audit triggers, `updated_at` triggers, `create_org_and_owner` + `accept_invitation` RPCs — **applied**.
+- `0003_harden_function_grants.sql` — locked down trigger fns + privileged RPCs from anon; `search_path` fix (from `get_advisors`).
+- **RLS isolation PROVEN** against the live DB (`supabase/tests/rls_isolation.sql`): read isolation, write isolation, and manager/staff delete gating — all 4 tests pass.
+- `lib/database.types.ts` generated from the live schema; Supabase clients are now typed.
+- Remaining (moves into UI phases): auth signup/org/invite **screens**, atomic payment/retainer/convert **RPCs** (Phase 4), seed-loader for demo data.
 
-### Phase 1 — Schema / RLS / Auth (SQL written, not yet applied)
-- `supabase/migrations/0001_init.sql` — enums, all org-scoped tables, indexes, constraints, append-only `audit_log`.
-- `supabase/migrations/0002_rls_audit_rpc.sql` — RLS helpers (`auth_org_ids`, `auth_role_in`), policies (read = member, delete = manager), audit triggers, `updated_at` triggers, `create_org_and_owner` + `accept_invitation` RPCs.
-- **Blocked on:** provisioning a Supabase project (needs the account owner) → then `supabase db push`, RLS integration tests, atomic payment/retainer/convert RPCs, seed loader.
+## 🟡 In progress / next
 
 ## ⬜ Not started
 - Phase 3 — Read UI (shell + 6 modules, charts, RTL/LTR). *Can be built against `lib/seed.ts` without live Supabase.*
