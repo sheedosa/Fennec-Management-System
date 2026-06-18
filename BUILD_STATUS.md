@@ -3,6 +3,24 @@
 Production rebuild of the frozen design prototype (`project/Fennec.dc.html`).
 Plan: `~/.claude/plans/analyse-the-full-system-peppy-curry.md`.
 
+## Owner-meeting change set — ✅ COMPLETE (branch `feat/ux-elevation`)
+
+All eight milestones built, verified live, committed & pushed:
+- **M2 Monochrome theme** — white/black UI, money keeps green/red, both themes.
+- **M1 Schema + Storage** — project_tasks, capital_assets, employees, calendar_events, invoices.file_path + private `invoices` bucket; all RLS'd (advisors clean).
+- **M3 Design system** — Button/Input/Select/Modal/Table+CardTable/Tabs/Toaster/Avatar/Badge (token-based, responsive, focus-visible).
+- **M4 Invoices** — build-or-upload invoices, edit/delete, record-payment, signed-URL file view (verified: created live, 5→6).
+- **M5 Clients hub → project mini-dashboard** — drill-down routes, editable status, KPI strip, To-do/Expenses/Payments/Timeline tabs, print-PDF; Pipeline & Projects tabs removed, Capital & Calendar added (6-tab nav).
+- **M6 Company Capital** — asset register + live cash/receivables + total worth (verified: 71,200 reconciles).
+- **M7 Finances all-in-one** — per-project P&L + journal + employees/salaries with dedup'd "log this month" (verified: salary → overhead).
+- **M8 Calendar** — month + agenda views, event CRUD (project/client linked), in-app + browser reminders (verified: agenda renders events).
+- **M9/M10 Mobile + hardening** — tables collapse to cards <768px (verified), 20/20 tests green incl. live e2e, advisors clean, build green.
+
+**Logins:** `fennec` / `Fennec123` (admin) · `demo@fennec.ly` / `FennecDemo123`.
+**Remaining (deferred):** Sentry, strict CSP, CI/CD, SMTP for email confirmation + enable leaked-password protection, PITR restore drill.
+
+---
+
 ## ✅ Done & verified
 
 ### Phase 0 — Scaffold (`npm run build` passes)
