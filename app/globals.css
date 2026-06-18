@@ -176,6 +176,51 @@ button {
   filter: invert(1) brightness(1.6);
 }
 
+/* Responsive table → stacked cards on mobile (no horizontal scroll). */
+@media (max-width: 767px) {
+  .ui-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .ui-table,
+  .ui-table tbody,
+  .ui-table tr,
+  .ui-table td {
+    display: block;
+    width: 100%;
+  }
+  .ui-table tr {
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .ui-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 14px !important;
+    text-align: end !important;
+    border-bottom: 1px solid var(--border) !important;
+  }
+  .ui-table td:last-child {
+    border-bottom: none !important;
+  }
+  .ui-table td::before {
+    content: attr(data-label);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--fg-muted);
+    text-align: start;
+    flex-shrink: 0;
+  }
+}
+
 /* focus-visible baseline (a11y) */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--interactive);

@@ -4,6 +4,7 @@ import { getThemePref } from "@/lib/theme";
 import { supabaseConfigured } from "@/lib/supabase/env";
 import { ConfigNotice } from "@/components/ConfigNotice";
 import { AppShell } from "@/components/shell/AppShell";
+import { Toaster } from "@/components/ui/Toaster";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   if (!supabaseConfigured()) return <ConfigNotice />;
@@ -16,8 +17,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const themePref = (await getThemePref()) ?? ctx.theme;
 
   return (
-    <AppShell orgName={ctx.orgName} role={ctx.role} locale={ctx.locale} theme={themePref}>
-      {children}
-    </AppShell>
+    <>
+      <AppShell orgName={ctx.orgName} role={ctx.role} locale={ctx.locale} theme={themePref}>
+        {children}
+      </AppShell>
+      <Toaster />
+    </>
   );
 }
