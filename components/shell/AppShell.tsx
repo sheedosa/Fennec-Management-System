@@ -14,10 +14,10 @@ import { ThemeToggle } from "@/components/shell/ThemeToggle";
 const NAV: { id: string; ar: string; en: string; paths: string[] }[] = [
   { id: "dashboard", ar: "لوحة القيادة", en: "Dashboard", paths: ["M3 13h8V3H3z", "M13 21h8V3h-8z", "M3 21h8v-6H3z"] },
   { id: "clients", ar: "العملاء", en: "Clients", paths: ["M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", "M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8", "M22 21v-2a4 4 0 0 0-3-3.87", "M16 3.13a4 4 0 0 1 0 7.75"] },
-  { id: "pipeline", ar: "الفرص البيعية", en: "Pipeline", paths: ["M3 3v18h18", "M7 16V9", "M12 16V5", "M17 16v-4"] },
-  { id: "projects", ar: "المشاريع والعقود", en: "Projects & Contracts", paths: ["M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"] },
   { id: "invoices", ar: "الفواتير", en: "Invoices", paths: ["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z", "M14 2v6h6", "M9 13h6", "M9 17h6"] },
   { id: "finances", ar: "المالية والمصروفات", en: "Finance & Expenses", paths: ["M12 1v22", "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"] },
+  { id: "capital", ar: "رأس مال الشركة", en: "Company Capital", paths: ["M3 21h18", "M3 10h18", "M5 6l7-3 7 3", "M5 10v11", "M19 10v11", "M9 14v3", "M15 14v3"] },
+  { id: "calendar", ar: "التقويم", en: "Calendar", paths: ["M8 2v4", "M16 2v4", "M3 10h18", "M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"] },
 ];
 
 function NavIcon({ paths, active }: { paths: string[]; active: boolean }) {
@@ -46,7 +46,9 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const active = NAV.find((n) => pathname.startsWith("/" + n.id)) ?? NAV[0];
+  // Projects live under the Clients hub, so /projects/* highlights Clients.
+  const activePath = pathname.startsWith("/projects") ? "/clients" : pathname;
+  const active = NAV.find((n) => activePath.startsWith("/" + n.id)) ?? NAV[0];
   const startSide = locale === "en" ? "left" : "right";
 
   return (

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getOrgContext } from "@/lib/auth/context";
 import { loadFennecData } from "@/lib/data/load";
 import { L } from "@/lib/i18n/dictionary";
@@ -35,7 +36,8 @@ export default async function ClientsPage() {
             const ltv = clientLTV(data, c.id);
             const g = avatarGrad(c.name);
             return (
-              <Card key={c.id} style={{ padding: "18px" }}>
+              <Link key={c.id} href={`/clients/${c.id}`} style={{ textDecoration: "none" }}>
+              <Card style={{ padding: "18px", cursor: "pointer" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
                   <div style={{ width: "46px", height: "46px", borderRadius: "13px", background: `linear-gradient(135deg,${g[0]},${g[1]})`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "18px", flexShrink: 0 }}>{c.name.charAt(0)}</div>
                   <div style={{ minWidth: 0 }}>
@@ -54,6 +56,7 @@ export default async function ClientsPage() {
                   </div>
                 </div>
               </Card>
+              </Link>
             );
           })}
         </div>
