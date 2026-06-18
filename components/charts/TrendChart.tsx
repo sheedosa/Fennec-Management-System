@@ -22,31 +22,31 @@ export function TrendChart({ data, locale }: { data: TrendPoint[]; locale: Local
       <svg viewBox={`0 0 ${W} ${Hh}`} style={{ width: "100%", height: "auto", direction: "ltr" }}>
         <defs>
           <linearGradient id="gr" x1={0} y1={0} x2={0} y2={1}>
-            <stop offset="0%" stopColor="#15924f" stopOpacity={0.18} />
-            <stop offset="100%" stopColor="#15924f" stopOpacity={0} />
+            <stop offset="0%" stopColor="var(--color-green)" stopOpacity={0.18} />
+            <stop offset="100%" stopColor="var(--color-green)" stopOpacity={0} />
           </linearGradient>
         </defs>
         {grid.map((f) => (
-          <line key={f} x1={pad} x2={W - pad} y1={bottom - (bottom - 24) * f} y2={bottom - (bottom - 24) * f} stroke="#f2ece1" strokeWidth={1} />
+          <line key={f} x1={pad} x2={W - pad} y1={bottom - (bottom - 24) * f} y2={bottom - (bottom - 24) * f} stroke="var(--color-border)" strokeWidth={1} />
         ))}
         <polygon points={area("rev")} fill="url(#gr)" />
-        <polyline points={line("rev")} fill="none" stroke="#15924f" strokeWidth={2.5} strokeLinejoin="round" />
-        <polyline points={line("exp")} fill="none" stroke="#c9821f" strokeWidth={2.5} strokeDasharray="5 4" strokeLinejoin="round" />
-        {dots("rev", "#15924f")}
-        {dots("exp", "#c9821f")}
+        <polyline points={line("rev")} fill="none" stroke="var(--color-green)" strokeWidth={2.5} strokeLinejoin="round" />
+        <polyline points={line("exp")} fill="none" stroke="var(--color-sub)" strokeWidth={2.5} strokeDasharray="5 4" strokeLinejoin="round" />
+        {dots("rev", "var(--color-green)")}
+        {dots("exp", "var(--color-sub)")}
         {data.map((x, i) => (
-          <text key={"lx" + i} x={X(i)} y={Hh - 10} fontSize={12} fill="#6e645a" textAnchor="middle" fontFamily="Tajawal">
+          <text key={"lx" + i} x={X(i)} y={Hh - 10} fontSize={12} fill="var(--color-faint)" textAnchor="middle" fontFamily="Tajawal">
             {labels[i]}
           </text>
         ))}
       </svg>
       <div style={{ display: "flex", gap: "18px", justifyContent: "center", marginTop: "6px" }}>
         <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "var(--color-sub)" }}>
-          <span style={{ width: "12px", height: "3px", background: "#15924f", borderRadius: "2px" }} />
+          <span style={{ width: "12px", height: "3px", background: "var(--color-green)", borderRadius: "2px" }} />
           {L("الإيرادات", "Revenue", locale)}
         </span>
         <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "var(--color-sub)" }}>
-          <span style={{ width: "12px", height: "3px", background: "#c9821f", borderRadius: "2px" }} />
+          <span style={{ width: "12px", height: "3px", background: "var(--color-sub)", borderRadius: "2px" }} />
           {L("المصروفات", "Expenses", locale)}
         </span>
       </div>

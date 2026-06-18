@@ -21,7 +21,7 @@ const NAV: { id: string; ar: string; en: string; paths: string[] }[] = [
 ];
 
 function NavIcon({ paths, active }: { paths: string[]; active: boolean }) {
-  const col = active ? "#fff" : "#7c6f5c";
+  const col = active ? "var(--accent-contrast)" : "var(--color-faint)";
   return (
     <svg width={20} height={20} viewBox="0 0 24 24">
       {paths.map((d, i) => (
@@ -66,8 +66,8 @@ export function AppShell({
           gap: "4px",
         }}
       >
-        <div style={{ padding: "4px 8px 16px", borderBottom: "1px solid rgba(40,33,24,.10)", marginBottom: "12px" }}>
-          <Image src="/assets/fennec-logo-dark.png" alt="Fennec" width={148} height={39} style={{ width: "148px", height: "auto", display: "block", margin: "0 auto" }} />
+        <div style={{ padding: "4px 8px 16px", borderBottom: "1px solid var(--color-border)", marginBottom: "12px" }}>
+          <Image className="fx-logo" src="/assets/fennec-logo-dark.png" alt="Fennec" width={148} height={39} style={{ width: "148px", height: "auto", display: "block", margin: "0 auto" }} />
           <div style={{ textAlign: "center", color: "var(--color-faint)", fontSize: "10px", letterSpacing: "3.5px", marginTop: "2px" }}>
             {L("الإدارة المالية", "FINANCE SUITE", locale)}
           </div>
@@ -90,12 +90,12 @@ export function AppShell({
                 padding: "12px 14px",
                 borderRadius: "12px",
                 background: isActive ? "var(--color-blue)" : "transparent",
-                color: isActive ? "#fff" : "var(--color-sub)",
+                color: isActive ? "var(--accent-contrast)" : "var(--color-sub)",
                 fontWeight: isActive ? 700 : 600,
                 fontSize: "15px",
                 textAlign: startSide as "left" | "right",
                 textDecoration: "none",
-                boxShadow: isActive ? "0 6px 16px rgba(184,84,47,.32)" : "none",
+                boxShadow: isActive ? "var(--elev-1)" : "none",
               }}
             >
               <NavIcon paths={n.paths} active={isActive} />
@@ -103,9 +103,9 @@ export function AppShell({
             </Link>
           );
         })}
-        <div style={{ marginTop: "auto", paddingTop: "12px", borderTop: "1px solid rgba(40,33,24,.10)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "11px", padding: "8px 10px", borderRadius: "12px", background: "rgba(40,33,24,.05)" }}>
-            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "linear-gradient(135deg,#dd9a39,#e6b863)", display: "flex", alignItems: "center", justifyContent: "center", color: "#3a2c12", fontWeight: 800, fontSize: "17px", flexShrink: 0 }}>
+        <div style={{ marginTop: "auto", paddingTop: "12px", borderTop: "1px solid var(--color-border)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "11px", padding: "8px 10px", borderRadius: "12px", background: "var(--color-card-alt)" }}>
+            <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-contrast)", fontWeight: 800, fontSize: "17px", flexShrink: 0 }}>
               {(orgName || "F").charAt(0)}
             </div>
             <div style={{ minWidth: 0 }}>

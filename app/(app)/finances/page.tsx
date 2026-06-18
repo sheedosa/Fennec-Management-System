@@ -9,10 +9,10 @@ const CAT: Record<string, [string, string]> = {
   salaries: ["رواتب", "Salaries"], rent: ["إيجار", "Rent"], internet: ["إنترنت واشتراكات", "Internet & Subscriptions"], operations: ["تشغيل وضيافة", "Operations & Hospitality"],
 };
 const TYPE: Record<string, [string, string, string, string]> = {
-  // [ar, en, color, soft-bg]
-  revenue: ["إيراد", "Revenue", "#15924f", "#e8f5ec"],
-  cost: ["تكلفة مشروع", "Project Cost", "#b8542f", "#f8ece3"],
-  overhead: ["مصروف ثابت", "Fixed Expense", "#c9821f", "#fbf1df"],
+  // [ar, en, color, soft-bg] — revenue keeps green; costs/overhead neutral
+  revenue: ["إيراد", "Revenue", "var(--color-green)", "var(--color-green-soft)"],
+  cost: ["تكلفة مشروع", "Project Cost", "var(--color-sub)", "var(--color-card-alt)"],
+  overhead: ["مصروف ثابت", "Fixed Expense", "var(--color-sub)", "var(--color-card-alt)"],
 };
 
 export default async function FinancesPage() {

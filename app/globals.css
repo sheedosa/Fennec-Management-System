@@ -51,66 +51,68 @@
 
 /* ── LIGHT (default) ───────────────────────────────────────────────── */
 :root {
-  --bg: #f7f6f3;
+  /* Monochrome: white bg, black elements. Money keeps colour (success/danger). */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-2: #f1efea;
-  --surface-3: #ffffff;
-  --border: #e7e3db;
-  --border-strong: #d6d0c4;
-  --fg: #1a1611;
-  --fg-muted: #5c564c;
-  --fg-faint: #857e72;
+  --surface-2: #f4f4f5;
+  --surface-3: #ececee;
+  --border: #e2e2e5;
+  --border-strong: #c9c9cf;
+  --fg: #0a0a0b;
+  --fg-muted: #52525b;
+  --fg-faint: #71717a;
 
-  --accent: #9a7b22; /* gold (text-safe on light) */
-  --accent-bright: #c8a04a; /* decorative gold */
+  --accent: #18181b; /* near-black — primary actions are black on white */
+  --accent-bright: #2b2b30;
   --accent-contrast: #ffffff;
-  --interactive: #0f7d72; /* teal */
-  --success: #15803d;
+  --interactive: #000000; /* focus/links → black */
+  --success: #15803d; /* KEEP green (revenue/paid/profit) */
   --success-bg: rgba(21, 128, 61, 0.1);
-  --warning: #b07712;
-  --warning-bg: rgba(176, 119, 18, 0.12);
-  --danger: #c13b30;
-  --danger-bg: rgba(193, 59, 48, 0.1);
-  --info: #2563c9;
-  --info-bg: rgba(37, 99, 201, 0.1);
+  --warning: #3f3f46; /* neutralized → grey */
+  --warning-bg: rgba(63, 63, 70, 0.1);
+  --danger: #c1121f; /* KEEP red (overdue/loss) */
+  --danger-bg: rgba(193, 18, 31, 0.1);
+  --info: #3f3f46; /* neutralized → grey */
+  --info-bg: rgba(63, 63, 70, 0.08);
 
-  --sidebar: #f1efea;
-  --elev-1: 0 1px 2px rgba(26, 22, 17, 0.05), 0 2px 8px rgba(26, 22, 17, 0.04);
-  --elev-2: 0 8px 30px rgba(26, 22, 17, 0.14);
-  --glow-accent: 0 4px 14px rgba(154, 123, 34, 0.22);
+  --sidebar: #fafafa;
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --elev-2: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --glow-accent: 0 2px 10px rgba(0, 0, 0, 0.12);
 
   color-scheme: light;
 }
 
 /* ── DARK (cinematic default for the app) ──────────────────────────── */
 :root[data-theme="dark"] {
-  --bg: #0b0c0e;
-  --surface: #141619;
-  --surface-2: #1c1f23;
-  --surface-3: #24282d;
-  --border: #2c3035;
-  --border-strong: #3a4047;
-  --fg: #eceae3;
-  --fg-muted: #a7a399;
-  --fg-faint: #76726a;
+  /* Monochrome: black bg, white elements. Money keeps colour (success/danger). */
+  --bg: #000000;
+  --surface: #0b0b0d;
+  --surface-2: #131316;
+  --surface-3: #1b1b1f;
+  --border: #26262b;
+  --border-strong: #3a3a41;
+  --fg: #fafafa;
+  --fg-muted: #a1a1aa;
+  --fg-faint: #71717a;
 
-  --accent: #d4af52; /* gold */
-  --accent-bright: #e6c463;
-  --accent-contrast: #1a1611;
-  --interactive: #3fb6a8; /* teal */
-  --success: #3fcb7f;
-  --success-bg: rgba(63, 203, 127, 0.14);
-  --warning: #e0a93b;
-  --warning-bg: rgba(224, 169, 59, 0.14);
-  --danger: #f2685c;
-  --danger-bg: rgba(242, 104, 92, 0.14);
-  --info: #5b9bf0;
-  --info-bg: rgba(91, 155, 240, 0.14);
+  --accent: #fafafa; /* primary actions → white on black */
+  --accent-bright: #e4e4e7;
+  --accent-contrast: #0a0a0b;
+  --interactive: #ffffff; /* focus/links → white */
+  --success: #4ade80; /* KEEP green */
+  --success-bg: rgba(74, 222, 128, 0.14);
+  --warning: #a1a1aa; /* neutralized → grey */
+  --warning-bg: rgba(161, 161, 170, 0.14);
+  --danger: #f87171; /* KEEP red */
+  --danger-bg: rgba(248, 113, 113, 0.14);
+  --info: #a1a1aa; /* neutralized → grey */
+  --info-bg: rgba(161, 161, 170, 0.12);
 
-  --sidebar: #141619;
-  --elev-1: 0 1px 0 rgba(255, 255, 255, 0.03), 0 2px 8px rgba(0, 0, 0, 0.5);
-  --elev-2: 0 12px 40px rgba(0, 0, 0, 0.65);
-  --glow-accent: 0 0 0 1px rgba(212, 175, 82, 0.35), 0 6px 20px rgba(212, 175, 82, 0.18);
+  --sidebar: #0b0b0d;
+  --elev-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.6);
+  --elev-2: 0 12px 40px rgba(0, 0, 0, 0.7);
+  --glow-accent: 0 0 0 1px rgba(255, 255, 255, 0.18), 0 6px 20px rgba(0, 0, 0, 0.5);
 
   color-scheme: dark;
 }
@@ -167,6 +169,11 @@ button {
 .fx-num {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+}
+
+/* The Fennec wordmark is a dark logo; invert it to white on dark surfaces. */
+[data-theme="dark"] .fx-logo {
+  filter: invert(1) brightness(1.6);
 }
 
 /* focus-visible baseline (a11y) */

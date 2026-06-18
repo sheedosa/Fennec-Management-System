@@ -25,7 +25,7 @@ export function PeriodSelector({ current, locale }: { current: Period; locale: L
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
       <span style={{ fontSize: "13.5px", color: "var(--color-sub)", fontWeight: 600 }}>{L("اعرض بيانات:", "Showing:", locale)}</span>
-      <div style={{ display: "inline-flex", background: "#fff", border: "1px solid var(--color-border)", borderRadius: "12px", padding: "4px", gap: "2px", flexWrap: "wrap" }}>
+      <div style={{ display: "inline-flex", background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: "12px", padding: "4px", gap: "2px", flexWrap: "wrap" }}>
         {PERIODS.map((p) => (
           <button
             key={p.k}
@@ -38,8 +38,8 @@ export function PeriodSelector({ current, locale }: { current: Period; locale: L
               fontSize: "13.5px",
               fontWeight: 700,
               background: current === p.k ? "var(--color-blue)" : "transparent",
-              color: current === p.k ? "#fff" : "var(--color-sub)",
-              boxShadow: current === p.k ? "0 2px 8px rgba(184,84,47,.24)" : "none",
+              color: current === p.k ? "var(--accent-contrast)" : "var(--color-sub)",
+              boxShadow: current === p.k ? "var(--elev-1)" : "none",
             }}
           >
             {L(p.ar, p.en, locale)}

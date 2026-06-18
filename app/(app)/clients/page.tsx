@@ -6,9 +6,10 @@ import { clientLTV } from "@/lib/finance/client";
 import { Card, SectionHead } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 
+// Monochrome avatar gradients (greys read on both white and black cards).
 const PALS: [string, string][] = [
-  ["#dd9a39", "#e7ba63"], ["#cf6b4a", "#e0926f"], ["#2f6bdc", "#5b8be8"],
-  ["#6f9a3f", "#9cbf68"], ["#8062c4", "#a288d8"], ["#1a9e8a", "#4cc0ad"],
+  ["#3f3f46", "#52525b"], ["#52525b", "#71717a"], ["#27272a", "#3f3f46"],
+  ["#46464d", "#5e5e66"], ["#33333a", "#4a4a52"], ["#5a5a62", "#7a7a82"],
 ];
 function avatarGrad(seed: string): [string, string] {
   let n = 0;

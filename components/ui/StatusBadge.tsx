@@ -1,22 +1,32 @@
 import type { Locale } from "@/lib/types";
 
-// Status → [color, soft-bg, ar, en]. Covers project + invoice statuses.
-const MAP: Record<string, [string, string, string, string]> = {
-  active: ["#15924f", "#e8f5ec", "نشط", "Active"],
-  hold: ["#c9821f", "#fbf1df", "معلّق", "On Hold"],
-  completed: ["#b8542f", "#f8ece3", "مكتمل", "Completed"],
-  cancelled: ["#d24b3e", "#fbece9", "ملغى", "Cancelled"],
-  overdue: ["#d24b3e", "#fbece9", "متأخر", "Overdue"],
-  draft: ["#6e645a", "#f1e9dc", "مسودة", "Draft"],
-  sent: ["#c9821f", "#fbf1df", "مُرسلة", "Sent"],
-  paid: ["#15924f", "#e8f5ec", "مدفوعة", "Paid"],
+// Monochrome badges: money-relevant statuses keep colour (paid=green,
+// overdue/cancelled=red); everything else is neutral grey. Colours come from
+// theme tokens so they flip with light/dark.
+type Tone = "success" | "danger" | "neutral";
+const MAP: Record<string, [Tone, string, string]> = {
+  active: ["neutral", "نشط", "Active"],
+  hold: ["neutral", "معلّق", "On Hold"],
+  completed: ["neutral", "مكتمل", "Completed"],
+  cancelled: ["danger", "ملغى", "Cancelled"],
+  overdue: ["danger", "متأخر", "Overdue"],
+  draft: ["neutral", "مسودة", "Draft"],
+  sent: ["neutral", "مُرسلة", "Sent"],
+  paid: ["success", "مدفوعة", "Paid"],
+};
+
+const TONE: Record<Tone, { fg: string; bg: string }> = {
+  success: { fg: "var(--color-green)", bg: "var(--color-green-soft)" },
+  danger: { fg: "var(--color-red)", bg: "var(--color-red-soft)" },
+  neutral: { fg: "var(--color-sub)", bg: "var(--color-card-alt)" },
 };
 
 export function StatusBadge({ status, locale }: { status: string; locale: Locale }) {
-  const [color, bg, ar, en] = MAP[status] ?? ["#6e645a", "#f1e9dc", status, status];
+  const [tone, ar, en] = MAP[status] ?? (["neutral", status, status] as [Tone, string, string]);
+  const c = TONE[tone];
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 11px", borderRadius: "20px", fontSize: "12px", fontWeight: 700, color, background: bg, whiteSpace: "nowrap", lineHeight: 1.4 }}>
-      <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: color, flexShrink: 0 }} />
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 11px", borderRadius: "20px", fontSize: "12px", fontWeight: 700, color: c.fg, background: c.bg, whiteSpace: "nowrap", lineHeight: 1.4 }}>
+      <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: c.fg, flexShrink: 0 }} />
       {locale === "en" ? en : ar}
     </span>
   );

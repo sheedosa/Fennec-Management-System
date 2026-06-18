@@ -3,7 +3,8 @@ import { L } from "@/lib/i18n/dictionary";
 import { money } from "@/lib/finance/money";
 import { EmptyState } from "@/components/ui/EmptyState";
 
-const PALETTE = ["#b8542f", "#8062c4", "#15924f", "#c9821f", "#2f8f86"];
+// Monochrome ramp — top client darkest, descending.
+const PALETTE = ["var(--fg)", "var(--fg-muted)", "var(--fg-muted)", "var(--fg-faint)", "var(--fg-faint)"];
 
 // Ported verbatim from prototype `topClientsChart()`.
 export function TopClientsChart({
