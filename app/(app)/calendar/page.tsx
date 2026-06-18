@@ -1,18 +1,19 @@
 import { getOrgContext } from "@/lib/auth/context";
+import { loadCalendar } from "@/lib/data/calendar";
 import { L } from "@/lib/i18n/dictionary";
-import { SectionHead, Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { SectionHead } from "@/components/ui/Card";
+import { CalendarView } from "@/components/calendar/CalendarView";
 
-// Placeholder — fleshed out in M8 (month + agenda + reminders).
 export default async function CalendarPage() {
   const ctx = (await getOrgContext())!;
-  const locale = ctx.locale;
+  const { events, projects, clients } = await loadCalendar();
   return (
     <div style={{ animation: "fxFade .3s" }}>
-      <SectionHead title={L("التقويم", "Calendar", locale)} sub={L("الجلسات والمواعيد القادمة.", "Upcoming sessions and bookings.", locale)} />
-      <Card style={{ padding: "8px" }}>
-        <EmptyState message={L("قيد الإنشاء — تقويم تفاعلي وتذكيرات قادمة قريباً.", "Coming soon — interactive calendar and reminders.", locale)} />
-      </Card>
+      <SectionHead
+        title={L("التقويم", "Calendar", ctx.locale)}
+        sub={L("جلسات التصوير والاجتماعات والمواعيد — مع تذكيرات.", "Shoots, meetings and deadlines — with reminders.", ctx.locale)}
+      />
+      <CalendarView events={events} projects={projects} clients={clients} locale={ctx.locale} />
     </div>
   );
 }

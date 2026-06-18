@@ -5,6 +5,7 @@ import { supabaseConfigured } from "@/lib/supabase/env";
 import { ConfigNotice } from "@/components/ConfigNotice";
 import { AppShell } from "@/components/shell/AppShell";
 import { Toaster } from "@/components/ui/Toaster";
+import { ReminderProvider } from "@/components/calendar/ReminderProvider";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   if (!supabaseConfigured()) return <ConfigNotice />;
@@ -22,6 +23,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {children}
       </AppShell>
       <Toaster />
+      <ReminderProvider locale={ctx.locale} />
     </>
   );
 }
