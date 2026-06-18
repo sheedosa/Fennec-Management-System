@@ -12,6 +12,8 @@ export type LeadStage = "contact" | "proposal" | "negotiation" | "won" | "lost";
 export type LostReason = "price" | "timing" | "competitor" | "noresponse" | "other";
 export type OrgRole = "manager" | "staff";
 export type Locale = "ar" | "en";
+export type AssetType = "cash" | "equipment" | "investment" | "receivable" | "other";
+export type EventType = "shoot" | "meeting" | "deadline" | "delivery" | "other";
 
 export interface Client {
   id: string;
@@ -51,6 +53,7 @@ export interface Invoice {
   items: InvoiceItem[];
   status: InvoiceStatus;
   paidAmount: number;
+  filePath?: string | null;
   date: string;
 }
 
@@ -83,6 +86,52 @@ export interface FixedExpense {
   category: OverheadCategory;
   date: string;
   lastGen: string; // YYYY-MM
+}
+
+export interface ProjectTask {
+  id: string;
+  projectId: string;
+  title: string;
+  done: boolean;
+  dueDate?: string | null;
+  position: number;
+  date: string;
+}
+
+export interface CapitalAsset {
+  id: string;
+  name: string;
+  type: AssetType;
+  value: number;
+  acquiredOn?: string | null;
+  notes?: string | null;
+  date: string;
+}
+
+export interface Employee {
+  id: string;
+  name: string;
+  role?: string | null;
+  monthlySalary: number;
+  active: boolean;
+  startDate?: string | null;
+  lastSalaryYM?: string | null;
+  date: string;
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  type: EventType;
+  startsAt: string;
+  endsAt?: string | null;
+  allDay: boolean;
+  location?: string | null;
+  projectId?: string | null;
+  clientId?: string | null;
+  notes?: string | null;
+  remindMinutesBefore?: number | null;
+  date: string;
 }
 
 export interface FennecData {

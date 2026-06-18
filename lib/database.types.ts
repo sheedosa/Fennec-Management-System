@@ -17,6 +17,192 @@ export type Database = {
   };
   public: {
     Tables: {
+      calendar_events: {
+        Row: {
+          all_day: boolean;
+          client_id: string | null;
+          created_at: string;
+          created_on: string;
+          deleted_at: string | null;
+          ends_at: string | null;
+          id: string;
+          location: string | null;
+          notes: string | null;
+          org_id: string;
+          project_id: string | null;
+          remind_minutes_before: number | null;
+          starts_at: string;
+          title: string;
+          type: Database["public"]["Enums"]["event_type"];
+          updated_at: string;
+        };
+        Insert: {
+          all_day?: boolean;
+          client_id?: string | null;
+          created_at?: string;
+          created_on?: string;
+          deleted_at?: string | null;
+          ends_at?: string | null;
+          id?: string;
+          location?: string | null;
+          notes?: string | null;
+          org_id: string;
+          project_id?: string | null;
+          remind_minutes_before?: number | null;
+          starts_at: string;
+          title: string;
+          type?: Database["public"]["Enums"]["event_type"];
+          updated_at?: string;
+        };
+        Update: {
+          all_day?: boolean;
+          client_id?: string | null;
+          created_at?: string;
+          created_on?: string;
+          deleted_at?: string | null;
+          ends_at?: string | null;
+          id?: string;
+          location?: string | null;
+          notes?: string | null;
+          org_id?: string;
+          project_id?: string | null;
+          remind_minutes_before?: number | null;
+          starts_at?: string;
+          title?: string;
+          type?: Database["public"]["Enums"]["event_type"];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      capital_assets: {
+        Row: {
+          acquired_on: string | null;
+          created_at: string;
+          created_on: string;
+          deleted_at: string | null;
+          id: string;
+          name: string;
+          notes: string | null;
+          org_id: string;
+          type: Database["public"]["Enums"]["asset_type"];
+          updated_at: string;
+          value: number;
+        };
+        Insert: {
+          acquired_on?: string | null;
+          created_at?: string;
+          created_on?: string;
+          deleted_at?: string | null;
+          id?: string;
+          name: string;
+          notes?: string | null;
+          org_id: string;
+          type?: Database["public"]["Enums"]["asset_type"];
+          updated_at?: string;
+          value: number;
+        };
+        Update: {
+          acquired_on?: string | null;
+          created_at?: string;
+          created_on?: string;
+          deleted_at?: string | null;
+          id?: string;
+          name?: string;
+          notes?: string | null;
+          org_id?: string;
+          type?: Database["public"]["Enums"]["asset_type"];
+          updated_at?: string;
+          value?: number;
+        };
+        Relationships: [];
+      };
+      employees: {
+        Row: {
+          active: boolean;
+          created_at: string;
+          created_on: string;
+          deleted_at: string | null;
+          id: string;
+          last_salary_ym: string | null;
+          monthly_salary: number;
+          name: string;
+          org_id: string;
+          role: string | null;
+          start_date: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          active?: boolean;
+          created_at?: string;
+          created_on?: string;
+          deleted_at?: string | null;
+          id?: string;
+          last_salary_ym?: string | null;
+          monthly_salary: number;
+          name: string;
+          org_id: string;
+          role?: string | null;
+          start_date?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          active?: boolean;
+          created_at?: string;
+          created_on?: string;
+          deleted_at?: string | null;
+          id?: string;
+          last_salary_ym?: string | null;
+          monthly_salary?: number;
+          name?: string;
+          org_id?: string;
+          role?: string | null;
+          start_date?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      project_tasks: {
+        Row: {
+          created_at: string;
+          created_on: string;
+          deleted_at: string | null;
+          done: boolean;
+          due_date: string | null;
+          id: string;
+          org_id: string;
+          position: number;
+          project_id: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_on?: string;
+          deleted_at?: string | null;
+          done?: boolean;
+          due_date?: string | null;
+          id?: string;
+          org_id: string;
+          position?: number;
+          project_id: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_on?: string;
+          deleted_at?: string | null;
+          done?: boolean;
+          due_date?: string | null;
+          id?: string;
+          org_id?: string;
+          position?: number;
+          project_id?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       audit_log: {
         Row: {
           action: string;
@@ -204,6 +390,7 @@ export type Database = {
           created_on: string;
           deleted_at: string | null;
           due_date: string;
+          file_path: string | null;
           id: string;
           issue_date: string;
           number: string;
@@ -219,6 +406,7 @@ export type Database = {
           created_on?: string;
           deleted_at?: string | null;
           due_date: string;
+          file_path?: string | null;
           id?: string;
           issue_date: string;
           number: string;
@@ -234,6 +422,7 @@ export type Database = {
           created_on?: string;
           deleted_at?: string | null;
           due_date?: string;
+          file_path?: string | null;
           id?: string;
           issue_date?: string;
           number?: string;
@@ -431,6 +620,8 @@ export type Database = {
       create_org_and_owner: { Args: { org_name: string }; Returns: string };
     };
     Enums: {
+      asset_type: "cash" | "equipment" | "investment" | "receivable" | "other";
+      event_type: "shoot" | "meeting" | "deadline" | "delivery" | "other";
       contract_type: "oneoff" | "retainer";
       invoice_status: "draft" | "sent" | "paid" | "overdue";
       lead_stage: "contact" | "proposal" | "negotiation" | "won" | "lost";

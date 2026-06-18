@@ -71,6 +71,7 @@ export async function loadFennecData(): Promise<FennecData> {
     items: itemsByInvoice.get(iv.id) ?? [],
     status: iv.status,
     paidAmount: n(iv.paid_amount),
+    filePath: iv.file_path,
     date: iv.created_on,
   }));
 
