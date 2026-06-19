@@ -189,7 +189,7 @@ function InvoiceModal({
     <Modal open onClose={onClose} title={invoice ? L("تعديل فاتورة", "Edit Invoice", locale) : L("فاتورة جديدة", "New Invoice", locale)} size="lg">
       <form onSubmit={submit}>
         {invoice ? <input type="hidden" name="id" defaultValue={invoice.id} /> : null}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+        <div className="fx-2col">
           <Field label={L("رقم الفاتورة", "Invoice #", locale)}>
             <Input name="number" defaultValue={invoice?.number} dir="ltr" required placeholder="FN-2026-001" />
           </Field>
@@ -235,7 +235,7 @@ function InvoiceModal({
             <Button type="button" size="sm" variant="secondary" onClick={() => setItems([...items, { desc: "", amount: "" }])}>{L("+ إضافة بند", "+ Add Item", locale)}</Button>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+          <div className="fx-2col">
             <Field label={L("قيمة الفاتورة (د.ل)", "Invoice total (LYD)", locale)}>
               <Input name="total" inputMode="decimal" defaultValue={invoice?.items[0]?.amount ?? ""} placeholder="0" />
             </Field>

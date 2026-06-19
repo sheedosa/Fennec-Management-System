@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 export type ThemePref = "light" | "dark" | "system";
 export const THEME_COOKIE = "fennec_theme";
-const DEFAULT_PREF: ThemePref = "dark"; // cinematic default
+const DEFAULT_PREF: ThemePref = "light"; // default to light mode
 
 /** Read the saved theme preference from the cookie (server). */
 export async function getThemePref(): Promise<ThemePref> {
@@ -14,5 +14,7 @@ export async function getThemePref(): Promise<ThemePref> {
 /** The data-theme attribute to render server-side. For "system" we fall back
  *  to dark on the server; the pre-paint script corrects it before first paint. */
 export function resolveThemeAttr(pref: ThemePref): "light" | "dark" {
-  return pref === "light" ? "light" : "dark";
+  // light + system default to light on the server; the pre-paint script
+  // corrects "system" to the OS preference before first paint.
+  return pref === "dark" ? "dark" : "light";
 }

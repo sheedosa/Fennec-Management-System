@@ -174,7 +174,7 @@ function EventModal({ event, presetDate, projects, clients, locale, busy, onClos
       <form onSubmit={submit}>
         {event ? <input type="hidden" name="id" defaultValue={event.id} /> : null}
         <Field label={L("العنوان", "Title", locale)}><Input name="title" defaultValue={event?.title} required placeholder={L("مثال: تصوير حملة رمضان", "e.g. Ramadan shoot", locale)} /></Field>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+        <div className="fx-2col">
           <Field label={L("النوع", "Type", locale)}>
             <Select name="type" defaultValue={event?.type ?? "shoot"}>
               {(Object.keys(TYPE_LABEL) as EventType[]).map((t) => <option key={t} value={t}>{L(TYPE_LABEL[t][0], TYPE_LABEL[t][1], locale)}</option>)}
@@ -195,7 +195,7 @@ function EventModal({ event, presetDate, projects, clients, locale, busy, onClos
           <input type="checkbox" name="allDay" checked={allDay} onChange={(e) => setAllDay(e.target.checked)} style={{ width: "16px", height: "16px", accentColor: "var(--accent)" }} />
           {L("طوال اليوم", "All day", locale)}
         </label>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+        <div className="fx-2col">
           <Field label={L("المشروع", "Project", locale)}>
             <Select name="projectId" defaultValue={event?.projectId ?? ""}>
               <option value="">{L("بدون", "None", locale)}</option>

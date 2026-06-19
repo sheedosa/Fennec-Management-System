@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 // Pre-paint script: when preference is "system", set data-theme from the OS
 // before first paint so there's no flash. For explicit light/dark the SSR
 // attribute already matches, so this is a no-op.
-const themeScript = `(function(){try{var p="dark";var m=document.cookie.match(/fennec_theme=(light|dark|system)/);if(m)p=m[1];if(p==="system"){p=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.dataset.theme=p;}catch(e){}})();`;
+const themeScript = `(function(){try{var p="light";var m=document.cookie.match(/fennec_theme=(light|dark|system)/);if(m)p=m[1];if(p==="system"){p=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.dataset.theme=p;}catch(e){}})();`;
 
 export default async function RootLayout({
   children,

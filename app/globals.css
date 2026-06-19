@@ -198,6 +198,40 @@ button {
   .fx-skel::after { animation: none; }
 }
 
+/* App content padding: roomy on desktop, tighter on phones. */
+.fx-content {
+  padding: 24px;
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .fx-content {
+    padding: 14px;
+  }
+}
+
+/* Two-column form grid that collapses to one column on small screens. */
+.fx-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 540px) {
+  .fx-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Comfortable tap targets on touch devices. */
+@media (pointer: coarse) {
+  button,
+  a[role="button"],
+  input[type="checkbox"],
+  select {
+    min-height: 40px;
+  }
+}
+
 /* Responsive table → stacked cards on mobile (no horizontal scroll). */
 @media (max-width: 767px) {
   .ui-table thead {

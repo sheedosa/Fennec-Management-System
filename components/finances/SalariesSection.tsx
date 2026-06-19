@@ -105,7 +105,7 @@ function EmployeeModal({ employee, locale, busy, onClose, onSubmit }: { employee
       <form onSubmit={submit}>
         {employee ? <input type="hidden" name="id" defaultValue={employee.id} /> : null}
         <Field label={L("الاسم", "Name", locale)}><Input name="name" defaultValue={employee?.name} required /></Field>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+        <div className="fx-2col">
           <Field label={L("الدور", "Role", locale)}><Input name="role" defaultValue={employee?.role ?? ""} placeholder={L("مثال: مصور", "e.g. Cinematographer", locale)} /></Field>
           <Field label={L("الراتب الشهري (د.ل)", "Monthly Salary (LYD)", locale)}><Input name="monthlySalary" inputMode="decimal" defaultValue={employee?.monthlySalary ?? ""} required /></Field>
         </div>

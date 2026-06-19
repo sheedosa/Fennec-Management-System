@@ -93,7 +93,7 @@ function AssetModal({ asset, locale, busy, onClose, onSubmit }: { asset: Capital
         <Field label={L("اسم الأصل", "Asset name", locale)}>
           <Input name="name" defaultValue={asset?.name} required placeholder={L("مثال: كاميرا RED", "e.g. RED camera", locale)} />
         </Field>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+        <div className="fx-2col">
           <Field label={L("النوع", "Type", locale)}>
             <Select name="type" defaultValue={asset?.type ?? "cash"}>
               {(Object.keys(TYPE_LABEL) as AssetType[]).map((t) => <option key={t} value={t}>{L(TYPE_LABEL[t][0], TYPE_LABEL[t][1], locale)}</option>)}

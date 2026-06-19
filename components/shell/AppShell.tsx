@@ -156,7 +156,7 @@ export function AppShell({
             </form>
           </div>
         </header>
-        <div style={{ padding: "24px", flex: 1 }}>{children}</div>
+        <div className="fx-content">{children}</div>
       </div>
     </div>
   );
