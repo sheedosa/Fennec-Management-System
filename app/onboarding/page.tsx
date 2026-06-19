@@ -15,12 +15,13 @@ export default function OnboardingPage() {
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
-        background: "linear-gradient(135deg,#fbf6ee,#f4eee3)",
+        background: "var(--bg)",
       }}
     >
       <div style={{ width: "100%", maxWidth: "420px" }}>
         <div style={{ textAlign: "center", marginBottom: "22px" }}>
           <Image
+            className="fx-logo"
             src="/assets/fennec-logo-dark.png"
             alt="Fennec"
             width={160}
@@ -31,11 +32,11 @@ export default function OnboardingPage() {
         </div>
         <div
           style={{
-            background: "#fff",
-            border: "1px solid var(--color-border)",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: "18px",
             padding: "28px 26px",
-            boxShadow: "0 2px 8px rgba(44,38,32,.05), 0 20px 50px rgba(44,38,32,.06)",
+            boxShadow: "var(--elev-2)",
           }}
         >
           <h1 style={{ margin: "0 0 4px", fontSize: "21px", fontWeight: 800, color: "var(--color-navy)" }}>
@@ -66,10 +67,10 @@ export default function OnboardingPage() {
                   width: "100%",
                   padding: "11px 13px",
                   borderRadius: "12px",
-                  border: "1px solid var(--color-border)",
-                  background: "#fff",
+                  border: "1px solid var(--border-strong)",
+                  background: "var(--surface)",
                   fontSize: "14.5px",
-                  color: "var(--color-navy)",
+                  color: "var(--fg)",
                 }}
               >
                 <option value="ar">العربية</option>

@@ -40,11 +40,11 @@ export function Field({
           width: "100%",
           padding: "11px 13px",
           borderRadius: "12px",
-          border: "1px solid var(--color-border)",
-          background: "#fff",
+          border: "1px solid var(--border-strong)",
+          background: "var(--surface)",
           fontSize: "14.5px",
           outline: "none",
-          color: "var(--color-navy)",
+          color: "var(--fg)",
         }}
       />
     </label>
@@ -61,14 +61,14 @@ export function SubmitButton({ label }: { label: string }) {
         width: "100%",
         padding: "12px",
         borderRadius: "12px",
-        border: "1px solid var(--color-blue)",
-        background: "var(--color-blue)",
-        color: "#fff",
+        border: "1px solid var(--accent)",
+        background: "var(--accent)",
+        color: "var(--accent-contrast)",
         fontWeight: 700,
         fontSize: "15px",
         cursor: pending ? "default" : "pointer",
         opacity: pending ? 0.7 : 1,
-        boxShadow: "0 4px 12px rgba(184,84,47,.26)",
+        boxShadow: "var(--elev-1)",
       }}
     >
       {pending ? "..." : label}
