@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type {
   FennecData,
@@ -16,7 +17,7 @@ import type {
 
 const n = (v: number | string | null) => Number(v ?? 0);
 
-export async function loadFennecData(): Promise<FennecData> {
+export const loadFennecData = cache(async (): Promise<FennecData> => {
   const supabase = await createClient();
 
   const [clientsRes, projectsRes, invoicesRes, itemsRes, txRes, leadsRes, fixedRes] =
@@ -107,4 +108,4 @@ export async function loadFennecData(): Promise<FennecData> {
   }));
 
   return { clients, projects, invoices, transactions, leads, fixedExpenses };
-}
+});

@@ -176,6 +176,28 @@ button {
   filter: invert(1) brightness(1.6);
 }
 
+/* Skeleton placeholder (instant navigation feedback). */
+.fx-skel {
+  background: var(--surface-2);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.fx-skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--fg) 6%, transparent), transparent);
+  animation: fxShimmer 1.2s infinite;
+}
+@keyframes fxShimmer {
+  100% { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-skel::after { animation: none; }
+}
+
 /* Responsive table → stacked cards on mobile (no horizontal scroll). */
 @media (max-width: 767px) {
   .ui-table thead {
